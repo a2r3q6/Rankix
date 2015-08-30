@@ -42,7 +42,7 @@ BEFORE AND AFTER
 ![After](http://s6.postimg.org/5f49aed69/screenshot_2.png)
 
 
-**TIME TOOK: 2.456 seconds**
+**TIME TAKEN: 2.456 seconds**
 
 
 
