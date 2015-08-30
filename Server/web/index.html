@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <script type="text/javascript">
+       $(document).ready(function(){
+           $('.Month').children('a').each(function () {
+               var newVal = this.text+" 2006";
+               this.text = newVal;
+           });
+       });
+    </script>
+</head>
+<body>
+<div class="Month">
+    <a class="Jan">Jan</a>
+    <a class="Feb">Feb</a>
+    <a class="Mar">Mar</a>
+    <a class="Apr">Apr</a>
+    <a class="May">May</a>
+    <a class="Jun">Jun</a>
+    <a class="Jul">Jul</a>
+    <a class="Aug">Aug</a>
+    <a class="Sep">Sep</a>
+    <a class="Oct">Oct</a>
+    <a class="Nov">Nov</a>
+    <a class="Dec">Dec</a>
+</div>
+</body>
+</html>
