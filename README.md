@@ -77,9 +77,9 @@ You can also **double click** the rankix.exe file and it'll ask you the movie fo
 NOTE
 ====
 ```
-As usual, If you want to run **rankix** command any where from the command line, 
-You have to put the **rankix.exe** file's path into enviroment variable path. To do this,
-Go to **My computer -> properties -> advanced -> environment variables -> Path** and edit path by adding .exe's directory into path.
+As usual, If you want to run rankix command any where from the command line, 
+You have to put the rankix.exe file's path into enviroment variable path. To do this,
+Go to My computer -> properties -> advanced -> environment variables -> Path and edit path by adding .exe's directory into path.
 ```
 
 
