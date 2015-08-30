@@ -1,31 +1,52 @@
 ![Banner](http://s6.postimg.org/3xisyu8fl/banner.png)
 # Rankix
-Rankix is a simple console program. It can fetch **IMDB** rating from the web and add those ratings into the movie file name.
+Rankix is a simple Java console program that can help you to find **IMDB** ratings.
 
 ### Commands
-To fetch ratings for the movies under the directory (*D:/Videos/Films*).
+
+**command format**
 ```
-rankix -r "D:/Videos/Films"
+rankix (-r|-u) ("Your-Movie-Directory"|.) 
+```
+`-r` stands for `RATE` and used to get **RATING**.
+
+`-u` stands for `UNDO` and used to undo the changes.
+
+
+
+To fetch ratings for the movies use **-r** flag. Use the **.** (dot) to use the current directory.
+
+```
+rankix -r ("Your-Movie-Directory"|.) 
 ```
 
-To **remove/undo** the Rankix name format from the file.
+To **undo** the directory use **-u** flag. Use the **.**(dot) to use the current directory.
+
 ```
-rankix -u "D:/Videos/Films"
+rankix -u ("Your-Movie-Directory"|.) 
 ```
+
+
 
 BEFORE AND AFTER
 ================
+
 **Before Rankixing.**
+
 ![Before](http://s6.postimg.org/7v62o8v8x/screenshot_1.png)
 
+
+
 **After Rankixing**
+
 ![After](http://s6.postimg.org/5f49aed69/screenshot_2.png)
+
 
 **TIME TOOK: 2.456 seconds**
 
-#### NOTE:
-The decimal points at the starting of the file specifies the **IMDB** rating.
 
+
+Rankixedname format = **(IMDBRating) # (originalFileName) - Rankix (fileExtension)**
 
 
 Demo
@@ -36,24 +57,30 @@ You must download the rankix.exe file to try this demo.
 Suppose you've a directory full of movies and the path of the folder is **D:/Videos/Movies**
 
 Now, if you want to run Rankix under **Movies** directory, then run 
+
 ```
 rankix -r "D:/Videos/Movies"
 ```
 
 if you want to remove the Rankixed name and keep the old name, then run
+
 ```
 rankix -u "D:/Videos/Movies"
 ```
 
-ADDITIONAL ACCESS
-=================
+
+DOUBLE CLICK
+============
 You can also **double click** the rankix.exe file and it'll ask you the movie folder path .So you don't want to worry about the commands.
+
 
 NOTE
 ====
+```
 As usual, If you want to run **rankix** command any where from the command line, 
 You have to put the **rankix.exe** file's path into enviroment variable path. To do this,
 Go to **My computer -> properties -> advanced -> environment variables -> Path** and edit path by adding .exe's directory into path.
+```
 
 
 
