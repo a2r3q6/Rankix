@@ -52,7 +52,7 @@ Rankixedname format = **(IMDBRating) # (originalFileName) - Rankix (fileExtensio
 Demo
 ====
 
-You must download the rankix.exe file to try this demo.
+You must [Download](https://github.com/shifarshifz/Rankix/releases/download/v0.1/rankix.exe) the rankix.exe file to try this demo.
 
 Suppose you've a directory full of movies and the path of the folder is **D:/Videos/Movies**
 
@@ -86,3 +86,4 @@ Go to **My computer -> properties -> advanced -> environment variables -> Path**
 
 
 
+	
