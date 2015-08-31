@@ -14,6 +14,7 @@ public class Movie {
     private final String fileName, filePath;
     private String fileExtension,fileNameWithOutExt;
     private String rating,rankixedName;
+    private String filteredMovieName;
 
     public Movie(int id, File file) {
 
@@ -91,5 +92,13 @@ public class Movie {
 
     public String getRating() {
         return rating;
+    }
+
+    public void setFilteredMovieName(String filteredMovieName) {
+        this.filteredMovieName = filteredMovieName;
+    }
+
+    public String getFilteredMovieName() {
+        return filteredMovieName;
     }
 }

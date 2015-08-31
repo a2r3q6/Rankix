@@ -36,12 +36,16 @@ public class FileAnalyzer {
 
     private static final Pattern rankixedPattern = Pattern.compile(rankixedFileNameRegEx);
 
-    public static String getMovieNameFromFileName(String fileName) {
+    public static String getMovieNameFromFile(File file) {
 
+        String fileName = file.getName();
         fileName = clearRandixName(fileName);
 
-        if (fileName.contains(".")) {
-            fileName = fileName.substring(0, fileName.lastIndexOf('.')) + " ";
+        if(file.isFile()){
+
+            if (fileName.contains(".")) {
+                fileName = fileName.substring(0, fileName.lastIndexOf('.')) + " ";
+            }
         }
 
         //Removing junk symbols and junk texts

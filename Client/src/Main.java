@@ -24,17 +24,13 @@ public class Main {
     private static Map<Integer, Movie> movieFileList;
 
     private static final String ERROR = "error";
-    private static final String MESSAGE = "message";
-    private static final String TYPE = "type";
-    private static final String TYPE_PERC = "perc";
     private static final String DATA = "data";
     private static final String ID = "id";
     private static final String NAME = "name";
-    private static final String RATING = "rating";
-    private static final String TYPE_MSG = "msg";
     private static final String FLAG_RANK = "-r";
     private static final String FLAG_UNDO = "-u";
-    private static WebSocket ws;
+    private static int ratingsReceivedCount;
+    private static int ratingsRequestedCount;
 
     public static void main(String[] args) {
 
@@ -59,7 +55,7 @@ public class Main {
                         try {
                             startRankix(path);
                         } catch (NoMovieFoundException e) {
-                            System.out.println("No movie found under "+path);
+                            System.out.println("No movie found under " + path);
                         } catch (Exception e) {
                             System.out.println("Network error occurred, Please check your connection");
                         }
@@ -97,31 +93,31 @@ public class Main {
             String path = null;
             boolean isValidPath = false;
             Scanner scanner = new Scanner(System.in);
-            do{
+            do {
                 System.out.print("Enter the path you want to Rankixed: ");
-                path = scanner.nextLine();
-                if(path!=null){
-                    if(path.isEmpty()){
+                path = "DummyData/Folder";
+                if (path != null) {
+                    if (path.isEmpty()) {
                         System.out.println("Folder path must be specified");
-                    }else if(path.equals(".")){
+                    } else if (path.equals(".")) {
                         path = System.getProperty("user.dir");
                         isValidPath = true;
-                    }else{
-                        if(FileAnalyzer.isValidDirectory(path)){
+                    } else {
+                        if (FileAnalyzer.isValidDirectory(path)) {
                             isValidPath = true;
                         }
                     }
-                }else{
+                } else {
                     System.out.println("Folder path must be specified");
                 }
 
-            }while(!isValidPath);
+            } while (!isValidPath);
 
             try {
                 startRankix(path);
             } catch (NoMovieFoundException e) {
-                System.out.println("No movie found under "+path);
-            } catch (Exception e){
+                System.out.println("No movie found under " + path);
+            } catch (Exception e) {
                 System.out.println("Network error occured, please check your connection");
             }
         }
@@ -130,7 +126,7 @@ public class Main {
 
     private static void startRankix(String path) throws JSONException, IOException, WebSocketException, NoMovieFoundException {
 
-        System.out.println("Starting ranking in "+path);
+        System.out.println("Starting ranking in " + path);
 
         movieFileList = new HashMap<>();
 
@@ -165,17 +161,20 @@ public class Main {
             //Putting movie id which is file position
             jMovieNameId.put(ID, entry.getKey());
 
-            String fileName = FileAnalyzer.getMovieNameFromFileName(movie.getFileName());
-
+            String movieName = FileAnalyzer.getMovieNameFromFile(movie.getFile());
             //Final filtered moviename adding jsonArray (payload)
-            jMovieNameId.put(NAME, fileName);
+            jMovieNameId.put(NAME, movieName);
+            movie.setFilteredMovieName(movieName);
             jaMovieNameId.put(jMovieNameId);
         }
 
 
-        System.out.println("Connecting to RankixSocket, This may take some time.");
+        System.out.println("CONNECTING TO RANKIX SOCKET...");
 
-        ws = new WebSocketFactory()
+
+        ratingsReceivedCount = 0;
+
+        new WebSocketFactory()
                 .createSocket(LOCAL_SOCKET)
                 .addListener(new WebSocketAdapter() {
                     public void onTextMessage(WebSocket websocket, String jsonData) {
@@ -183,35 +182,18 @@ public class Main {
                         try {
                             final JSONObject jData = new JSONObject(jsonData);
                             final boolean hasError = jData.getBoolean(ERROR);
+                            final String data = jData.getString(DATA);
                             if (hasError) {
-                                final String errorReason = jData.getString(MESSAGE);
-                                System.out.println("Error : " + errorReason);
-                                System.out.println("RankixSocket Closed");
+                                System.out.println("RankixSocket -> " + data);
                             } else {
-
-                                //Valid response
-                                final String dataType = jData.getString(TYPE);
-                                final String data = jData.getString(DATA);
-
-                                //Checking if the message is about progress
-                                switch (dataType) {
-                                    case TYPE_PERC:
-                                        System.out.print("Progress: " + data + "%\r");
-                                        break;
-                                    case TYPE_MSG:
-                                        System.out.println("RankixSocket : " + data);
-                                        break;
-                                    case RATING:
-
-                                        //Final response
-                                        final int id = jData.getInt(ID);
-                                        Movie ratedMovie = movieFileList.get(id);
-                                        ratedMovie.setRating(data);
-                                        ratedMovie.setRankixedName(data);
-                                        renameFile(ratedMovie);
-
-                                        break;
-                                }
+                                //Final response
+                                final int id = jData.getInt(ID);
+                                Movie ratedMovie = movieFileList.get(id);
+                                ratedMovie.setRating(data);
+                                ratedMovie.setRankixedName(data);
+                                System.out.println(String.format("%s has %s/10", ratedMovie.getFilteredMovieName(),data));
+                                renameFile(ratedMovie);
+                                showProgress(++ratingsReceivedCount);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -222,29 +204,41 @@ public class Main {
 
                     @Override
                     public void onConnected(WebSocket websocket, Map<String, List<String>> headers) {
-                        System.out.println("Connected to RankixSocket");
-                        //Sending all film name
-                        websocket.sendText(jaMovieNameId.toString());
+                        System.out.println("CONNECTED TO RANKIX SOCKET");
+                        //Starting data transmission
+                        ratingsRequestedCount = jaMovieNameId.length();
+                        for (int i = 0; i < ratingsRequestedCount; i++) {
+                            try {
+                                websocket.sendText(jaMovieNameId.getJSONObject(i).toString());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
 
                     @Override
                     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer) {
-                        System.out.println("RANKIX SOCKET DISCONNECTED");
-                        System.exit(0);
+                        System.out.println("RANKIX SOCKET CLOSED");
                     }
                 })
                 .connect();
-
-
     }
+
+    private static void showProgress(int ratingsReceivedCount) {
+        final int perc = (ratingsReceivedCount + 1) * 100 / ratingsRequestedCount;
+        System.out.print(String.format("Progress: %d%%\r", perc));
+    }
+
 
     private static void rollBack(String path) {
         File[] files = new File(path).listFiles();
         if (files != null) {
             for (File f : files) {
-                final File destFile = new File(f.getParentFile().getAbsolutePath() + "/" + FileAnalyzer.clearRandixName(f.getName()));
-                if (!f.renameTo(destFile)) {
-                    System.out.println(f.getName() + " failed to rollback");
+                if (FileAnalyzer.isVideoFile(f)) {
+                    final File destFile = new File(f.getParentFile().getAbsolutePath() + "/" + FileAnalyzer.clearRandixName(f.getName()));
+                    if (!f.renameTo(destFile)) {
+                        System.out.println(f.getName() + " failed to rollback");
+                    }
                 }
             }
         }
