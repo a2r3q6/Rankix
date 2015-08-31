@@ -38,6 +38,7 @@ public class Main {
 
     public static void main(String[] args) {
 
+
         //All command must contain two parts
         //(flag)(value)
         if (args.length == 2) {
