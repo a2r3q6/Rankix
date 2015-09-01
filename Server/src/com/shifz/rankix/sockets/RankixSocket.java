@@ -50,6 +50,12 @@ public class RankixSocket {
                 client.sendText(BlowIt.getJSONError("IMDB rating is null for " + name));
             }
 
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         } catch (JSONException | IOException e) {
             e.printStackTrace();
             try {

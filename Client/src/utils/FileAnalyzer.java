@@ -26,7 +26,7 @@ public class FileAnalyzer {
         }
     }
 
-    private static final String movieNameRegEx = "^([\\w ]+)(\\d{4})\\s+";
+    private static final String movieNameRegEx = "(?<MovieName>.*)(?<Year>\\d{4}[^\\w])";
     private static final Pattern moviePattern = Pattern.compile(movieNameRegEx);
     private static final String rankixedFileNameRegEx = "([\\d]\\.[\\d]\\s#\\s)(.+)(\\s[\\-]\\sRankix)(\\.\\w+)?";
 
@@ -41,23 +41,17 @@ public class FileAnalyzer {
         String fileName = file.getName();
         fileName = clearRandixName(fileName);
 
-        if(file.isFile()){
-
-            if (fileName.contains(".")) {
-                fileName = fileName.substring(0, fileName.lastIndexOf('.')) + " ";
-            }
+        if(file.isFile()&& fileName.contains(".")){
+            fileName = fileName.substring(0,fileName.lastIndexOf('.'));
         }
-
-        //Removing junk symbols and junk texts
-        fileName = fileName.replaceAll("(\\.|_)", " ");
-        fileName = fileName.replaceAll("(720p|720|1080p|1080|\\(|\\)|\\[|\\])", "");
+        fileName = fileName.replaceAll("\\W+"," ");
 
         final Matcher movieNameMatcher = moviePattern.matcher(fileName);
 
         //Checking if the the filename has proper movieName and year
         if (movieNameMatcher.find()) {
-            final String movieName = movieNameMatcher.group(1);
-            final String year = movieNameMatcher.group(2);
+            final String movieName = movieNameMatcher.group("MovieName");
+            final String year = movieNameMatcher.group("Year");
             fileName = movieName + year;
         }
 

@@ -33,8 +33,7 @@ public class Main {
     private static int ratingsRequestedCount;
 
     public static void main(String[] args) {
-
-
+    
         //All command must contain two parts
         //(flag)(value)
         if (args.length == 2) {
@@ -88,14 +87,17 @@ public class Main {
 
             }
 
+
         } else {
 
             String path = null;
             boolean isValidPath = false;
             Scanner scanner = new Scanner(System.in);
+
             do {
                 System.out.print("Enter the path you want to Rankixed: ");
-                path = "DummyData/Folder";
+
+                path = scanner.nextLine();
                 if (path != null) {
                     if (path.isEmpty()) {
                         System.out.println("Folder path must be specified");
@@ -105,7 +107,10 @@ public class Main {
                     } else {
                         if (FileAnalyzer.isValidDirectory(path)) {
                             isValidPath = true;
+                        }else{
+                            System.out.println(path+" is an invalid directory!");
                         }
+
                     }
                 } else {
                     System.out.println("Folder path must be specified");
@@ -162,6 +167,7 @@ public class Main {
             jMovieNameId.put(ID, entry.getKey());
 
             String movieName = FileAnalyzer.getMovieNameFromFile(movie.getFile());
+
             //Final filtered moviename adding jsonArray (payload)
             jMovieNameId.put(NAME, movieName);
             movie.setFilteredMovieName(movieName);
