@@ -52,7 +52,7 @@ Rankixedname format = **(IMDBRating) # (originalFileName) - Rankix (fileExtensio
 Demo
 ====
 
-**NOTE:** You should download the latest **[.exe](https://github.com/shifarshifz/Rankix/releases/download/v1.0.0/rankix.exe) or [.jar](https://github.com/shifarshifz/Rankix/releases/download/v1.0.0/rankix.jar)** versions of Randix inorder to try the Demo.
+**NOTE:** You should download the latest **[.exe](https://github.com/shifarshifz/Rankix/releases/download/v1.0.0/rankix.exe) or [.jar](https://github.com/shifarshifz/Rankix/releases/download/v1.0.0/rankix.jar)** version of Randix to try the Demo.
 
 Suppose you've a directory full of movies and the path of the folder is **D:/Videos/Movies**
 
