@@ -21,7 +21,6 @@ public class RankixSocket {
     private static final String ID = "id";
     private static final String NAME = "name";
     private static final String DATA = "data";
-    private int totalNamesCount;
 
     @OnOpen
     public void onOpen() {
@@ -32,11 +31,11 @@ public class RankixSocket {
     public void onMessage(Session session, String movieNameAndId) {
 
         final RemoteEndpoint.Basic client = session.getBasicRemote();
-
+        String name = null;
         try {
             final JSONObject jMovie = new JSONObject(movieNameAndId);
             final int id = jMovie.getInt(ID);
-            final String name = jMovie.getString(NAME);
+            name = jMovie.getString(NAME);
             final IMDBHelper imdbHelper = new IMDBHelper(name);
             final String imdbRating = imdbHelper.getRating();
 
@@ -50,16 +49,17 @@ public class RankixSocket {
                 client.sendText(BlowIt.getJSONError("IMDB rating is null for " + name));
             }
 
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-        } catch (JSONException | IOException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             try {
-                client.sendText(BlowIt.getJSONError("Error:" + e.getMessage()));
+                client.sendText(BlowIt.getJSONError("JSON error occurred for "+name));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            try {
+                client.sendText(BlowIt.getJSONError("Error occurred while crawling data for "+name));
             } catch (IOException e1) {
                 e1.printStackTrace();
             }

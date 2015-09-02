@@ -29,11 +29,25 @@ public class Main {
     private static final String NAME = "name";
     private static final String FLAG_RANK = "-r";
     private static final String FLAG_UNDO = "-u";
-    private static int ratingsReceivedCount;
-    private static int ratingsRequestedCount;
+    private static int ratingsReceived;
+    private static int requestSent;
+    private static int resultReceived;
 
     public static void main(String[] args) {
-    
+
+
+        /*if(true){
+            for(File f : new File("DummyData").listFiles()){
+                if(FileAnalyzer.isVideoFile(f)){
+                    System.out.println("-------------------------");
+                    System.out.println(f.getName());
+                    System.out.println(FileAnalyzer.getMovieNameFromFile(f));
+                    System.out.println("-------------------------");
+                }
+            }
+            return;
+        }*/
+
         //All command must contain two parts
         //(flag)(value)
         if (args.length == 2) {
@@ -128,8 +142,22 @@ public class Main {
         }
     }
 
+    private static void read(String s) {
+        if(true){
+            for(File f : new File(s).listFiles()){
+                if(f.isDirectory()){
+                    read(f.getAbsolutePath());
+                }
+                System.out.println(f.getAbsolutePath());
+            }
+        }
+    }
+
 
     private static void startRankix(String path) throws JSONException, IOException, WebSocketException, NoMovieFoundException {
+        ratingsReceived = 0;
+        requestSent = 0;
+        resultReceived = 0;
 
         System.out.println("Starting ranking in " + path);
 
@@ -138,13 +166,30 @@ public class Main {
         final File[] movieFiles = new File(path).listFiles();
         if (movieFiles != null) {
 
-            for (int i = 0; i < movieFiles.length; i++) {
+            int alreadyRankixedFile = 0;
+            final int totalFiles = movieFiles.length;
+            for (int i = 0; i < totalFiles; i++) {
                 final File movieFile = movieFiles[i];
                 if (FileAnalyzer.isVideoFile(movieFile)) {
-                    final Movie movie = new Movie(i, movieFile);
-                    movieFileList.put(i, movie);
+
+                    if(FileAnalyzer.isRankixed(movieFile.getName())){
+                        alreadyRankixedFile++;
+                    }else{
+                        final Movie movie = new Movie(i, movieFile);
+                        movieFileList.put(i, movie);
+                    }
+
                 }
             }
+
+            System.out.println("--------------------------------------");
+            System.out.println("Files found : "+totalFiles );
+            System.out.println("Already Rankixed Files : "+alreadyRankixedFile);
+            System.out.println("UnRankixed Files : "+movieFileList.size());
+            final int otherThanMovieFiles = totalFiles - (movieFileList.size() + alreadyRankixedFile);
+            System.out.println("Other than movieFiles: "+otherThanMovieFiles);
+            System.out.println("--------------------------------------");
+
 
             if (movieFileList.size() == 0) {
                 throw new NoMovieFoundException(path);
@@ -178,13 +223,12 @@ public class Main {
         System.out.println("CONNECTING TO RANKIX SOCKET...");
 
 
-        ratingsReceivedCount = 0;
+        ratingsReceived = 0;
 
         new WebSocketFactory()
-                .createSocket(LOCAL_SOCKET)
+                .createSocket(REMOTE_SOCKET)
                 .addListener(new WebSocketAdapter() {
                     public void onTextMessage(WebSocket websocket, String jsonData) {
-
                         try {
                             final JSONObject jData = new JSONObject(jsonData);
                             final boolean hasError = jData.getBoolean(ERROR);
@@ -197,13 +241,19 @@ public class Main {
                                 Movie ratedMovie = movieFileList.get(id);
                                 ratedMovie.setRating(data);
                                 ratedMovie.setRankixedName(data);
-                                System.out.println(String.format("%s has %s/10", ratedMovie.getFilteredMovieName(),data));
+                                System.out.println(String.format("<- %s has %s/10", ratedMovie.getFilteredMovieName(), data));
                                 renameFile(ratedMovie);
-                                showProgress(++ratingsReceivedCount);
+                                ratingsReceived++;
                             }
+                            showProgress(++resultReceived);
                         } catch (JSONException e) {
                             e.printStackTrace();
-                            System.out.println(jsonData);
+                            System.out.println("Error: " + e.getMessage());
+                        }
+
+                        if (requestSent == resultReceived) {
+                            System.out.println("Requesting to close socket");
+                            websocket.sendClose();
                         }
 
                     }
@@ -212,12 +262,15 @@ public class Main {
                     public void onConnected(WebSocket websocket, Map<String, List<String>> headers) {
                         System.out.println("CONNECTED TO RANKIX SOCKET");
                         //Starting data transmission
-                        ratingsRequestedCount = jaMovieNameId.length();
-                        for (int i = 0; i < ratingsRequestedCount; i++) {
+
+                        for (int i = 0; i < jaMovieNameId.length(); i++) {
                             try {
-                                websocket.sendText(jaMovieNameId.getJSONObject(i).toString());
+                                final String movieName = jaMovieNameId.getJSONObject(i).toString();
+                                websocket.sendText(movieName);
+                                requestSent++;
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                                System.out.println("Error: " + e.getMessage());
                             }
                         }
                     }
@@ -225,13 +278,15 @@ public class Main {
                     @Override
                     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer) {
                         System.out.println("RANKIX SOCKET CLOSED");
+                        final int prog = (ratingsReceived) * 100 / requestSent;
+                        System.out.println(String.format("%d%% ratings found", prog));
                     }
                 })
                 .connect();
     }
 
     private static void showProgress(int ratingsReceivedCount) {
-        final int perc = (ratingsReceivedCount + 1) * 100 / ratingsRequestedCount;
+        final int perc = (ratingsReceivedCount + 1) * 100 / requestSent;
         System.out.print(String.format("Progress: %d%%\r", perc));
     }
 
@@ -240,16 +295,22 @@ public class Main {
         File[] files = new File(path).listFiles();
         if (files != null) {
             for (File f : files) {
-                if (FileAnalyzer.isVideoFile(f)) {
-                    final File destFile = new File(f.getParentFile().getAbsolutePath() + "/" + FileAnalyzer.clearRandixName(f.getName()));
+                if (FileAnalyzer.isVideoFile(f) && FileAnalyzer.isRankixed(f.getName())) {
+                    final File destFile = new File(f.getParentFile().getAbsolutePath() + "/" + FileAnalyzer.getClearedRandixName(f.getName()));
                     if (!f.renameTo(destFile)) {
+                        System.out.println("DestFile: "+destFile.getAbsolutePath());
                         System.out.println(f.getName() + " failed to rollback");
                     }
                 }
             }
+
+            System.out.println("Rollback finished");
+
+        }else{
+            System.out.println("ROLLBACK FAILED");
         }
 
-        System.out.println("Rollback success");
+
     }
 
     private static void renameFile(Movie ratedMovie) {
@@ -277,7 +338,7 @@ public class Main {
         try {
             final File renamedFile = new File(ratedMovie.getRankixedName());
             if (!movieFile.renameTo(renamedFile)) {
-                System.out.println("File rename failed!");
+                System.out.println(renamedFile.getName() + " failed to rename !");
             }
         } catch (Exception e) {
             e.printStackTrace();
