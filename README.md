@@ -2,7 +2,7 @@
 # Rankix
 Rankix is a simple Java console program that can help you to find **IMDB** ratings.
 
-<iframe width="420" height="315" src="https://www.youtube.com/embed/jxwGH4DcWb0" frameborder="0" allowfullscreen></iframe>
+[![ScreenShot](http://s6.postimg.org/l8z2ufe41/screenshot_21.png)](http://www.youtube.com/watch?v=jxwGH4DcWb0)
 
 ### Commands
 
