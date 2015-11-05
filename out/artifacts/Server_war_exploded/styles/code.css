@@ -1,0 +1,11 @@
+html {
+  margin:20px 50px 50px 50px;
+}
+
+textarea#taTree{
+	height:200px;	
+}
+
+p{
+    text-transform:capitalize;
+}

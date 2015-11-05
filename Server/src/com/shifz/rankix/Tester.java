@@ -1,11 +1,15 @@
 package com.shifz.rankix;
 
 
-import com.shifz.rankix.utils.IMDBHelper;
+import com.shifz.rankix.utils.FileAnalyzer;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.File;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,11 +18,25 @@ import java.util.regex.Pattern;
  */
 public class Tester {
 
-    private static final String SEARCH_API_URL_FORMAT = "https://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=%s%%20imdb%%20rating";
+
 
     public static void main(String[] args) throws IOException {
-        System.out.println(new IMDBHelper("Ironman 3").getRating());
-    }
 
+        //Read data
+        final BufferedReader br = new BufferedReader(new FileReader("test_tree.txt"));
+        final StringBuilder treeStringBuilder = new StringBuilder();
+        String line;
+        while ((line = br.readLine()) != null) {
+            treeStringBuilder.append(line).append("\n");
+        }
+
+        br.close();
+
+        final String treeString = treeStringBuilder.toString();
+        System.out.println(URLEncoder.encode(treeString,"UTF-8"));
+
+
+
+    }
 
 }
