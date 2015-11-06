@@ -1,5 +1,10 @@
 html {
   margin:20px 50px 50px 50px;
+  background: url(../assets/images/logo_bg.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 textarea#taTree{
@@ -8,4 +13,14 @@ textarea#taTree{
 
 p{
     text-transform:capitalize;
+}
+
+div#console {
+    text-align: center;
+}
+
+div#console_data {
+    position: absolute;
+    z-index: -1;
+    color: #CECECE;
 }

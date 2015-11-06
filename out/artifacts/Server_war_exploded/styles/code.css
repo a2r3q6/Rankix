@@ -9,3 +9,9 @@ textarea#taTree{
 p{
     text-transform:capitalize;
 }
+
+div#console_data {
+    position: absolute;
+    z-index: -1;
+    color: #CECECE;
+}
