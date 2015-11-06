@@ -1,6 +1,31 @@
 ![Banner](http://s6.postimg.org/3xisyu8fl/banner.png)
-# Rankix
+
+Rankix is a small tool that can help you to find IMDB ratings for a list of movies with in seconds. Rankix is available in both WEB and CONSOLE.
+
+# Rankix WEB 
+**released on 11-6-2015**
+
+**Steps**
+1. Goto the movie folder and hold **shift** then click **right mouse button**
+2. Select **open command window here**
+3. type **tree /f /a | clip**
+4. Open [Rankix Website](http://shifar-shifz.rhcloud.com/Rankix)
+5. Press **Control + v** to paste the TREE Structure
+6. Click the **Rankix!** button
+7. That's all :)
+
+**Rankix WEB Demo**
+
+[![IMAGE](http://s6.postimg.org/4xkv84i0h/screenshot_39.png)](https://www.youtube.com/watch?v=5NXnCliu7Hk)
+
+
+-----------------------------------------------------------------------------
+
+
+# Rankix CONSOLE
 Rankix is a simple Java console program that can help you to find **IMDB** ratings.
+
+**Rankix Console DEMO**
 
 [![ScreenShot](http://s6.postimg.org/l8z2ufe41/screenshot_21.png)](http://www.youtube.com/watch?v=jxwGH4DcWb0)
 
@@ -85,7 +110,9 @@ Go to My computer -> properties -> advanced -> environment variables -> Path and
 ```
 
 
-
-
-
 	
+
+
+
+
+
