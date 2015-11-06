@@ -25,6 +25,15 @@ $(document).ready(function () {
 
     var isWorking = false;
 
+    function showProgressBar(){
+        $("#divProgress").css({'display':'block'});
+        $("#divProgress").slideDown(2000);
+    }
+
+    function hideProgress(){
+        $("#divProgress").slideUp(2000);
+    }
+
     $("#bRankix").click(function () {
 
         if (isWorking) {
@@ -37,10 +46,12 @@ $(document).ready(function () {
             alert("Tree data can't be empty!");
         } else {
 
+            showProgressBar();
+
             postProgress(10, "Contacting Tree Manager...");
 
             $.post(
-                "http://localhost:8080/Tree",
+                "/Rankix/Tree",
                 {tree: treeData},
                 function (data) {
 
@@ -48,8 +59,11 @@ $(document).ready(function () {
                     $("#bRankix").removeClass("btn-primary").addClass("btn-disabled");
 
                     if (data.error) {
-                        alert(data.data);
                         postProgress(0, "");
+                        hideProgress();
+                        $("#bRankix").addClass("btn-primary").removeClass("btn-disabled");
+                        $("div#results").append("<div class='alert alert-danger'><strong>Error:</strong>" + data.data + "</div>");
+                        isWorking = false;
                     } else {
 
                         postProgress(10, "Opening socket ...");
@@ -85,6 +99,7 @@ $(document).ready(function () {
                                 postProgress(perc, parseInt(perc) + "% - Last rankixed : " + movieName);
 
                                 if (perc == 100) {
+                                    hideProgress();
                                     webSocket.close();
                                 }
 
