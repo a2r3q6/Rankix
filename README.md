@@ -6,6 +6,7 @@ Rankix is a small tool that can help you to find IMDB ratings for a list of movi
 **released on 11-6-2015**
 
 **Steps**
+
 1. Goto the movie folder and hold **shift** then click **right mouse button**
 2. Select **open command window here**
 3. type **tree /f /a | clip**
@@ -111,7 +112,6 @@ Go to My computer -> properties -> advanced -> environment variables -> Path and
 
 
 	
-
 
 
 
