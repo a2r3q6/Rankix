@@ -28,7 +28,7 @@ public class FileAnalyzer {
 
     private static final String movieNameRegEx = "(?<MovieName>.*)(?<Year>\\d{4}[^\\w])";
     private static final Pattern moviePattern = Pattern.compile(movieNameRegEx);
-    private static final String rankixedFileNameRegEx = "\\d+(?:\\.\\d)?\\s#\\s(?<FileName>.*)\\s\\-\\sRankix(?<Extension>\\.\\w+)?";
+    private static final String rankixedFileNameRegEx = "\\d+(?:\\.\\d)?\\s#\\s(?<FileName>.*)\\s\\-\\s(Rankix|rankix)(?<Extension>\\.\\w+)?";
 
     public static Pattern getRankixedPattern() {
         return rankixedPattern;
@@ -59,8 +59,10 @@ public class FileAnalyzer {
         fileName = getClearedRandixName(fileName);
 
 
-        fileName = fileName.replaceAll("\\W+", " ");
-        fileName = fileName.toLowerCase();
+        fileName = fileName
+                .replaceAll("\\W+", " ")
+                .toLowerCase();
+
 
         if (junkWordRegEx == null) {
             junkWordRegEx = getJunkWordRegEx();
@@ -99,8 +101,8 @@ public class FileAnalyzer {
 
     public static String getJunkWordRegEx() {
         StringBuilder sb = new StringBuilder("(");
-        for (int i = 0; i < JUNK_WORDS.length; i++) {
-            sb.append(JUNK_WORDS[i] + "|");
+        for (final String junkWord : JUNK_WORDS) {
+            sb.append(junkWord).append("|");
         }
         sb = sb.deleteCharAt(sb.length() - 1);
         sb.append(")");

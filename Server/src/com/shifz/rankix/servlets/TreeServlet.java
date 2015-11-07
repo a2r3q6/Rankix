@@ -34,6 +34,7 @@ public class TreeServlet extends HttpServlet {
             "(?:^[\\|\\s]+)(.+)\\.(?:webm|mkv|flv|vob|ogv|ogg|drc|mng|avi|mov|qt|wmv|rm|rmvb|asf|mp4|m4p|m4v|mpg|mp2|mpeg|mpe|mpv|mpg|mpeg|m2v|m4v|svi|3gp|3g2|mxf|roq|nsv)+",
             Pattern.MULTILINE
     );
+
     private static final String KEY_ERROR = "error";
     private static final String KEY_TOTAL_ELEMENTS_FOUND = "total_elements_found";
     private static final String KEY_RANKIXED_FILE_COUNT = "rankixed_file_count";
@@ -59,6 +60,8 @@ public class TreeServlet extends HttpServlet {
             treeString = URLDecoder.decode(treeString, "UTF-8");
 
             if (TREE_FILE_PATTERN.matcher(treeString).find()) {
+
+                treeString = treeString.toLowerCase();
 
                 //Collecting video files from treeString
                 final Matcher videoFileNameMatcher = VIDEO_FILE_NAME_PATTERN.matcher(treeString);
