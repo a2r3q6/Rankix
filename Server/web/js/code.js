@@ -17,7 +17,8 @@ $(document).ready(function () {
     }
 
 
-    webSocket = new WebSocket("ws://shifar-shifz.rhcloud.com:8000/Rankix/RankixSocket");
+    //webSocket = new WebSocket("ws://shifar-shifz.rhcloud.com:8000/Rankix/RankixSocket");
+    webSocket = new WebSocket("ws://localhost:8080/RankixSocket");
 
     consoleData("CONNECTING...");
 
@@ -70,7 +71,8 @@ $(document).ready(function () {
 
         if (webSocket == null || webSocket.readyState != 1) {
             consoleData("Reopening new socket...");
-            webSocket = new WebSocket("ws://shifar-shifz.rhcloud.com:8000/Rankix/RankixSocket");
+            //webSocket = new WebSocket("ws://shifar-shifz.rhcloud.com:8000/Rankix/RankixSocket");
+            webSocket = new WebSocket("ws://localhost:8080/RankixSocket");
             isWorking = false;
         }
 
@@ -82,7 +84,7 @@ $(document).ready(function () {
         var treeData = $("#taTree").val();
 
         function showError(errorReason) {
-            $("div#results").prepend('<p class="text-danger"><strong>Error: </strong>'+errorReason+'</p>');
+            $("div#results").prepend('<p id="0" class="text-danger"><strong>Error: </strong>'+errorReason+'</p>');
         }
 
         if (treeData.trim().length == 0) {
@@ -92,8 +94,8 @@ $(document).ready(function () {
             showProgressBar();
 
             freezeApp();
-
-            $.post("/Rankix/Tree", {tree: treeData})
+            //Rankix/Tree
+            $.post("http://localhost:8080/Tree", {tree: treeData})
                 .done(function (data) {
 
                     postProgress(100,"TREE Managed!")
@@ -157,7 +159,7 @@ $(document).ready(function () {
                             var movieName = movieNameAndId[data.id];
 
                             function addResult(fontSize, movieName, data) {
-                                $("div#results").prepend('<p style="font-size:' + fontSize + 'px;">' + movieName + '<small class="text-muted"> has ' + data + '</small></p>');
+                                $("div#results").prepend('<p id="' + data + '" style="font-size:' + fontSize + 'px;">' + movieName + '<small class="text-muted"> has ' + data + '</small></p>');
                             }
 
                             if (!data.error) {
@@ -168,7 +170,7 @@ $(document).ready(function () {
                                 var myRegexp = /^IMDB rating is null for (.+)$/;
                                 var match = myRegexp.exec(data.data);
                                 movieName = match[1];
-                                $("div#results").prepend('<p class="text-danger"><strong>' + movieName + '</strong> has no rating</p>');
+                                $("div#results").prepend('<p id="0" class="text-danger"><strong>' + movieName + '</strong> has no rating</p>');
                             }
 
                             var scoreCount = $("#results p").length;
@@ -182,16 +184,26 @@ $(document).ready(function () {
                                 consoleData("---------------------------------");
                                 freeApp();
                             }
+
+                            //Sorting
+                            $("div#results p").sort(function (a, b) {
+                                console.log(a.id + " " + b.id);
+                                return parseFloat(a.id) < parseFloat(b.id);
+                            }).each(function(){
+                                var elem = $(this);
+                                elem.remove();
+                                $(elem).appendTo("div#results");
+                            });
                         };
 
                         webSocket.onclose = function (evt) {
                             consoleData("Socket closed");
                             freeApp();
-                            $("div#results").prepend("<p class='text-info'>SOCKET Closed</p>");
+                            $("div#results").prepend("<p id='0' class='text-info'>SOCKET Closed</p>");
                         };
                         webSocket.onerror = function (evt) {
                             freeApp();
-                            $("div#results").prepend("<p class='text-danger'>" + evt.data + "</p>");
+                            $("div#results").prepend("<p id='0' class='text-danger'>" + evt.data + "</p>");
                         };
                     }
                 })
