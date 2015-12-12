@@ -21,6 +21,7 @@ public class RankixSocket {
     private static final String ID = "id";
     private static final String NAME = "name";
     private static final String DATA = "data";
+    private static final String IMDB_ID = "imdb_id";
 
     @OnOpen
     public void onOpen() {
@@ -44,6 +45,7 @@ public class RankixSocket {
                 movieRating.put(ERROR, false);
                 movieRating.put(ID, id);
                 movieRating.put(DATA, imdbRating);
+                movieRating.put(IMDB_ID, imdbHelper.getImdbId());
                 client.sendText(movieRating.toString());
             } else {
                 client.sendText(BlowIt.getJSONError("IMDB rating is null for " + name));

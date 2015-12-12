@@ -22,10 +22,11 @@ public class IMDBHelper {
     private static final String RATING_PATTERN = "Rating:\\s(?<Rating>\\d+(?:\\.\\d)?)\\/10";
     private static final Pattern ratingPattern = Pattern.compile(RATING_PATTERN);
     private static final String GOOGLE_URL_FORMAT = "http://www.google.com/search?q=%s%%20imdb%%20rating";
-    private static final String IMDB_URL_FORMAT = "(imdb\\.com\\/title\\/tt\\d{7})";
+    private static final String IMDB_URL_FORMAT = "(?<imdbUrl>imdb\\.com\\/title\\/(?<imdbId>tt\\d{7}))";
     private static final Pattern IMDB_PATTERN = Pattern.compile(IMDB_URL_FORMAT);
     private static final String IMDB_RATING_PATTERN_REGEX = "<div class=\"titlePageSprite star-box-giga-star\"> (\\d+(?:\\.\\d)?) <\\/div>";
     private static final Pattern IMDB_RATING_PATTERN = Pattern.compile(IMDB_RATING_PATTERN_REGEX);
+    private String imdbId;
 
     public IMDBHelper(final String movieName) {
         this.movieName = movieName;
@@ -36,11 +37,11 @@ public class IMDBHelper {
         URL url = new URL(String.format(GOOGLE_URL_FORMAT, URLEncoder.encode(movieName, "UTF-8")));
 
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.addRequestProperty("User-Agent",FAKE_USER_AGENT);
+        con.addRequestProperty("User-Agent", FAKE_USER_AGENT);
         final BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String line;
         StringBuilder sb = new StringBuilder();
-        while((line=br.readLine())!=null){
+        while ((line = br.readLine()) != null) {
             sb.append(line);
         }
 
@@ -49,35 +50,52 @@ public class IMDBHelper {
         final String data = sb.toString();
         Matcher ratingMatcher = ratingPattern.matcher(data);
 
-        if(ratingMatcher.find()){
+        if (ratingMatcher.find()) {
+
+            //finding imdb id
+            final Matcher imdbIdMatcher = IMDB_PATTERN.matcher(data);
+            if (imdbIdMatcher.find()) {
+                this.imdbId = imdbIdMatcher.group("imdbId");
+                System.out.println("$ IMDB id of " + movieName + " is " + this.imdbId);
+            } else {
+                System.out.println("# IMDB ID failed to find " + movieName);
+            }
+
             return ratingMatcher.group("Rating");
-        }else{
+        } else {
+
             final Matcher imdbUrlMatcher = IMDB_PATTERN.matcher(data);
-            if(imdbUrlMatcher.find()){
-                final String imdbUrlString = "http://"+imdbUrlMatcher.group(1);
-                System.out.println("IMDB url found for "+this.movieName+" "+imdbUrlString);
+            if (imdbUrlMatcher.find()) {
+
+                final String imdbUrlString = "http://" + imdbUrlMatcher.group("imdbUrl");
+                this.imdbId = imdbUrlMatcher.group("imdbId");
+                System.out.println("IMDB id of " + movieName + " is " + imdbId);
+                System.out.println("IMDB url found for " + this.movieName + " " + imdbUrlString);
                 final URL imdbUrl = new URL(imdbUrlString);
                 BufferedReader imdbSiteReader = new BufferedReader(new InputStreamReader(imdbUrl.openStream()));
                 String imdbSiteLine;
                 final StringBuilder imdbSiteData = new StringBuilder();
-                while((imdbSiteLine=imdbSiteReader.readLine())!=null){
+                while ((imdbSiteLine = imdbSiteReader.readLine()) != null) {
                     imdbSiteData.append(imdbSiteLine);
                 }
 
                 final Matcher imdbRatingMatcher = IMDB_RATING_PATTERN.matcher(imdbSiteData.toString());
 
-                if(imdbRatingMatcher.find()){
+                if (imdbRatingMatcher.find()) {
                     return imdbRatingMatcher.group(1);
-                }else{
+                } else {
                     System.out.println("Rating not found in imdb url");
                 }
             }
         }
 
-        System.out.println(String.format("Rating not found for %s , and result is %s",movieName,data));
+        System.out.println(String.format("Rating not found for %s , and result is %s", movieName, data));
 
         return null;
 
     }
 
+    public String getImdbId() {
+        return this.imdbId;
+    }
 }
