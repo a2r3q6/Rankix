@@ -94,8 +94,8 @@ $(document).ready(function () {
             showProgressBar();
 
             freezeApp();
-            //Rankix/Tree
             $.post("http://localhost:8080/Tree", {tree: treeData})
+            //$.post("/Rankix/Tree", {tree: treeData})
                 .done(function (data) {
 
                     postProgress(100,"TREE Managed!")
@@ -183,17 +183,20 @@ $(document).ready(function () {
                                 consoleData("Took " + Math.round(((finishTime - startTime) / 1000)) + "s");
                                 consoleData("---------------------------------");
                                 freeApp();
+
+                                $("div#results p").sort(function (a, b) {
+                                    console.log(a.id + " " + b.id);
+                                    return parseFloat(a.id) > parseFloat(b.id);
+                                }).each(function(){
+                                    var elem = $(this);
+                                    elem.remove();
+                                    $(elem).prependTo("div#results");
+                                });
                             }
 
                             //Sorting
-                            $("div#results p").sort(function (a, b) {
-                                console.log(a.id + " " + b.id);
-                                return parseFloat(a.id) < parseFloat(b.id);
-                            }).each(function(){
-                                var elem = $(this);
-                                elem.remove();
-                                $(elem).appendTo("div#results");
-                            });
+
+
                         };
 
                         webSocket.onclose = function (evt) {
