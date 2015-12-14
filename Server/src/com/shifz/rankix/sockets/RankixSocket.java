@@ -25,7 +25,7 @@ public class RankixSocket {
 
     @OnOpen
     public void onOpen() {
-        System.out.println("RankixSocket: Connected");
+        System.out.println("Connected to RankixSocket");
     }
 
     @OnMessage
@@ -48,7 +48,7 @@ public class RankixSocket {
                 movieRating.put(IMDB_ID, imdbHelper.getImdbId());
                 client.sendText(movieRating.toString());
             } else {
-                client.sendText(BlowIt.getJSONError("IMDB rating is null for " + name));
+                client.sendText(BlowIt.getJSONError("Invalid movie name : " + name));
             }
 
         } catch (JSONException e) {
