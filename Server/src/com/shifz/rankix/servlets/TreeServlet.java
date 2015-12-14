@@ -25,8 +25,7 @@ import java.util.regex.Pattern;
 public class TreeServlet extends BaseServlet {
 
     private static final String KEY_TREE = "tree";
-    private static final String KEY_ID = "id";
-    private static final String KEY_NAME = "name";
+
 
     private static final Pattern TREE_FILE_PATTERN = Pattern.compile("(?:(?:\\|\\s{3})|(?:\\+\\-{3})).+");
 

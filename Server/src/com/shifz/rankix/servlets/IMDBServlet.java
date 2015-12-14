@@ -1,5 +1,6 @@
 package com.shifz.rankix.servlets;
 
+import com.shifz.rankix.utils.BlowIt;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,8 +21,6 @@ public class IMDBServlet extends HttpServlet {
 
     private static final String KEY_IMDB_ID = "imdbId";
     private static final String REGEX_IMDBID = "tt\\d{7}";
-    private static final String KEY_ERROR = "error";
-    private static final String KEY_MESSAGE = "message";
     private static final String IMDB_URL_FORMAT = "http://imdb.com/title/%s/";
 
     @Override
@@ -50,27 +49,16 @@ public class IMDBServlet extends HttpServlet {
 
                 br.close();
             } else {
-                out.write(getJSONError("Movie not found"));
+                out.write(BlowIt.getJSONError("Movie not found"));
             }
 
         } else {
-            out.write(getJSONError("Invalid imdbId"));
+            out.write(BlowIt.getJSONError("Invalid imdbId"));
         }
 
         out.flush();
         out.close();
 
-    }
-
-    private static String getJSONError(final String errorMessage) {
-        final JSONObject jError = new JSONObject();
-        try {
-            jError.put(KEY_ERROR, true);
-            jError.put(KEY_MESSAGE, errorMessage);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return jError.toString();
     }
 
 
