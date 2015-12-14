@@ -1,1 +1,7 @@
-<h1 itemprop=name class=>Iron Man 3</h1> = MovieName sample
+<h1 itemprop="name" class="">(?<MovieName>[A-Za-z0-9 ]+)<\/h1>
+
+ //To get time.
+ 1) <\/time>(.+)<\/span> replace with <[^>]*>
+
+ //To get decr
+ 2) <div class="summary_text" itemprop="description">(.*)<\/div>

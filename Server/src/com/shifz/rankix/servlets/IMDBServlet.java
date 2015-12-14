@@ -43,7 +43,7 @@ public class IMDBServlet extends HttpServlet {
 
                 String line;
                 while ((line = br.readLine()) != null) {
-                    sb.append(line).append("\n");
+                    sb.append(line.trim());
                 }
 
                 out.write(sb.toString());
