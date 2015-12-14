@@ -1,13 +1,12 @@
 package com.shifz.rankix.utils;
 
+import com.shifz.rankix.models.Movie;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,85 +16,154 @@ import java.util.regex.Pattern;
 public class IMDBHelper {
 
     private static final String FAKE_USER_AGENT = "ExampleBot 1.0 (+http://example.com/bot)";
-    private String movieName;
 
-    private static final String RATING_PATTERN = "Rating:\\s(?<Rating>\\d+(?:\\.\\d)?)\\/10";
-    private static final Pattern ratingPattern = Pattern.compile(RATING_PATTERN);
-    private static final String GOOGLE_URL_FORMAT = "http://www.google.com/search?q=%s%%20imdb%%20rating";
-    private static final String IMDB_URL_FORMAT = "(?<imdbUrl>imdb\\.com\\/title\\/(?<imdbId>tt\\d{7}))";
-    private static final Pattern IMDB_PATTERN = Pattern.compile(IMDB_URL_FORMAT);
-    private static final String IMDB_RATING_PATTERN_REGEX = "<div class=\"titlePageSprite star-box-giga-star\"> (\\d+(?:\\.\\d)?) <\\/div>";
-    private static final Pattern IMDB_RATING_PATTERN = Pattern.compile(IMDB_RATING_PATTERN_REGEX);
-    private String imdbId;
+    private static final String KEY_IMDB_ID = "imdbId";
+    private static final String KEY_IMDB_URL = "imdbUrl";
 
-    public IMDBHelper(final String movieName) {
-        this.movieName = movieName;
+    private static final String KEY_RATING = "Rating";
+
+    private static final Pattern GOOGLE_RATING_PATTERN = Pattern.compile("Rating:\\s(?<Rating>\\d+(?:\\.\\d)?)\\/10");
+    private static final String GOOGLE_SEARCH_URL_FORMAT = "http://www.google.com/search?q=%s%%20imdb%%20rating";
+
+    private static final Pattern IMDB_URL_PATTERN = Pattern.compile("(?<imdbUrl>imdb\\.com\\/title\\/(?<imdbId>tt\\d{7}))");
+    private static final Pattern IMDB_RATING_PATTERN = Pattern.compile("<div class=\"titlePageSprite star-box-giga-star\"> (\\d+(?:\\.\\d)?) <\\/div>");
+
+    private Movie movie;
+
+
+    public IMDBHelper(final String id, final String movieName) {
+        this.movie = new Movie(id, movieName);
     }
 
-    public String getRating() throws IOException {
+    public Movie getMovie() {
 
-        URL url = new URL(String.format(GOOGLE_URL_FORMAT, URLEncoder.encode(movieName, "UTF-8")));
-
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
-        con.addRequestProperty("User-Agent", FAKE_USER_AGENT);
-        final BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String line;
-        StringBuilder sb = new StringBuilder();
-        while ((line = br.readLine()) != null) {
-            sb.append(line);
+        if (this.movie.hasRating()) {
+            //Movie has rating
+            return this.movie;
         }
 
-        br.close();
+        //Un-optimized code - starts
+        final String googleUrlFormat = String.format(GOOGLE_SEARCH_URL_FORMAT, this.movie.getName());
+        final String googleData = getNetworkResponse(googleUrlFormat, true);
 
-        final String data = sb.toString();
-        Matcher ratingMatcher = ratingPattern.matcher(data);
+        //Checking if data is downloader
+        if (googleData == null) {
+            //Failed to downlaod data from google
+            return null;
+        }
 
-        if (ratingMatcher.find()) {
+        final Matcher googleRatingMatcher = GOOGLE_RATING_PATTERN.matcher(googleData);
 
-            //finding imdb id
-            final Matcher imdbIdMatcher = IMDB_PATTERN.matcher(data);
+        //Checking if google has the rating
+        if (googleRatingMatcher.find()) {
+
+            //Hooooray!! Google has the rating
+
+            //Finding imdb id which'd in the form of tt1234567 for further development.
+
+            //TODO: This is a bad practice, because the google data will be so much big and Regex is not cool to parse html. this must be fixed soon.
+            final Matcher imdbIdMatcher = IMDB_URL_PATTERN.matcher(googleData);
+
             if (imdbIdMatcher.find()) {
-                this.imdbId = imdbIdMatcher.group("imdbId");
-                System.out.println("$ IMDB id of " + movieName + " is " + this.imdbId);
-            } else {
-                System.out.println("# IMDB ID failed to find " + movieName);
+                //Saving imdb id in the object
+                this.movie.setImdbId(imdbIdMatcher.group(KEY_IMDB_ID));
             }
 
-            return ratingMatcher.group("Rating");
+            //Imdb rating collected through google.
+            final String gIMDBRating = googleRatingMatcher.group(KEY_RATING);
+            this.movie.setRating(gIMDBRating);
+
+            //returning movie
+            return this.movie;
+
         } else {
 
-            final Matcher imdbUrlMatcher = IMDB_PATTERN.matcher(data);
+            //Google hasn't the IMDB rating. So checking if google has the IMDBUrl.
+            System.out.println("GOOGLE failed to find rating for the movie " + this.movie);
+
+            //Finding imdb url from google response.
+            final Matcher imdbUrlMatcher = IMDB_URL_PATTERN.matcher(googleData);
+
             if (imdbUrlMatcher.find()) {
 
-                final String imdbUrlString = "http://" + imdbUrlMatcher.group("imdbUrl");
-                this.imdbId = imdbUrlMatcher.group("imdbId");
-                System.out.println("IMDB id of " + movieName + " is " + imdbId);
-                System.out.println("IMDB url found for " + this.movieName + " " + imdbUrlString);
-                final URL imdbUrl = new URL(imdbUrlString);
-                BufferedReader imdbSiteReader = new BufferedReader(new InputStreamReader(imdbUrl.openStream()));
-                String imdbSiteLine;
-                final StringBuilder imdbSiteData = new StringBuilder();
-                while ((imdbSiteLine = imdbSiteReader.readLine()) != null) {
-                    imdbSiteData.append(imdbSiteLine);
-                }
+                //Yes, google has the imdb url
+                System.out.println("but we've IMDB url, so downloading imdb.com data");
 
-                final Matcher imdbRatingMatcher = IMDB_RATING_PATTERN.matcher(imdbSiteData.toString());
+                //Converting url to http instead of www
+                final String imdbUrlString = String.format("http://%s", imdbUrlMatcher.group(KEY_IMDB_URL));
 
-                if (imdbRatingMatcher.find()) {
-                    return imdbRatingMatcher.group(1);
-                } else {
-                    System.out.println("Rating not found in imdb url");
+                //Setting imdb id for further use
+                final String imdbMovieId = imdbUrlMatcher.group(KEY_IMDB_ID);
+                this.movie.setImdbId(imdbMovieId);
+
+                //Downloading imdb.com data
+                final String imdbDotComData = getNetworkResponse(imdbUrlString, false);
+
+                if (imdbDotComData != null) {
+
+                    //Finding imdb rating from imdb.com
+                    final Matcher imdbRatingMatcher = IMDB_RATING_PATTERN.matcher(imdbDotComData);
+
+                    if (imdbRatingMatcher.find()) {
+
+                        //Hooray, we got the rating.
+                        final String iIMDBRating = imdbRatingMatcher.group(1);
+                        this.movie.setRating(iIMDBRating);
+
+                        return this.movie;
+                    }
+
+                    System.out.println("IMDB.com failed to find rating for " + this.movie);
                 }
             }
         }
 
-        System.out.println(String.format("Rating not found for %s , and result is %s", movieName, data));
+        System.out.println("Failed to find rating for " + this.movie);
 
         return null;
-
     }
 
-    public String getImdbId() {
-        return this.imdbId;
+    /**
+     * Used to get live network response of the given url
+     *
+     * @param urlString A valid url.
+     * @return String The response.
+     */
+    private static String getNetworkResponse(final String urlString, final boolean isFakeUserAgent) {
+
+        try {
+            //Creating url object
+            URL urlOb = new URL(urlString);
+
+            HttpURLConnection con = (HttpURLConnection) urlOb.openConnection();
+
+            //Faking user-agent to mock google.
+            if (isFakeUserAgent) {
+                con.addRequestProperty("User-Agent", FAKE_USER_AGENT);
+            }
+
+            //Downloading response
+            final BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+            String line;
+            StringBuilder sb = new StringBuilder();
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+            //Closing network resource
+            br.close();
+
+            if (sb.length() > 0) {
+                return sb.toString();
+            }
+
+        } catch (IOException e) {
+            //Something went wrong
+            e.printStackTrace();
+        }
+
+        //The response is empty
+        return null;
     }
+
 }

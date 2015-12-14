@@ -1,27 +1,21 @@
 ![Banner](http://s6.postimg.org/3xisyu8fl/banner.png)
 
-# This project is under development ...
+Rankix is a small tool that can help you to find IMDB ratings for a list of movies with in seconds. Rankix is available in both WEB and CONSOLE.
 
-### but we've a stable version running. Some of the features are listed below. Read on...
-
-Rankix is an IMDB Helper tool which can fetch the IMDB Ratings with in **MILLISECONDS**.
-
-The tools is available in both WEB and Console versions.
-
-# WEB Version 
+# Rankix WEB 
 **released on 11-6-2015**
 
 **Steps**
 
 1. Goto the movie folder and hold **shift** then click **right mouse button**
 2. Select **open command window here**
-3. type **tree /f /a | clip** (linux users just type **tree**)
+3. type **tree /f /a | clip**
 4. Open [Rankix Website](http://shifar-shifz.rhcloud.com/Rankix)
 5. Press **Control + v** to paste the TREE Structure
 6. Click the **Rankix!** button
 7. That's all :)
 
-**Web Version - Demo**
+**Rankix WEB Demo**
 
 [![IMAGE](http://s6.postimg.org/4xkv84i0h/screenshot_39.png)](https://www.youtube.com/watch?v=5NXnCliu7Hk)
 
@@ -29,10 +23,10 @@ The tools is available in both WEB and Console versions.
 -----------------------------------------------------------------------------
 
 
-# Console Version
+# Rankix CONSOLE
 Rankix is a simple Java console program that can help you to find **IMDB** ratings.
 
-**Console Version - DEMO**
+**Rankix Console DEMO**
 
 [![ScreenShot](http://s6.postimg.org/l8z2ufe41/screenshot_21.png)](http://www.youtube.com/watch?v=jxwGH4DcWb0)
 
@@ -78,7 +72,10 @@ BEFORE AND AFTER
 
 **TIME TAKEN: 2.456 seconds**
 
+
+
 Rankixedname format = **(IMDBRating) # (originalFileName) - Rankix (fileExtension)**
+
 
 Demo
 ====
@@ -102,15 +99,7 @@ rankix -u "D:/Videos/Movies"
 
 DOUBLE CLICK
 ============
-double click the `.exe` file to get into the Interactive mode.
-
-
-TODOs
-===========
-
-1. OneDay database integration.
-2. Detailed view of the selected movie (WEB).
-3. Increase the efficiency of MNS (Movie Name Sort) Algorithm (WEB and CONSOLE).
+You can also **double click** the rankix.exe file and it'll ask you the movie folder path .So you don't want to worry about the commands.
 
 
 NOTE

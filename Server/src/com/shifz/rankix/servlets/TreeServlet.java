@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  */
 
 @WebServlet(urlPatterns = {"/Tree"})
-public class TreeServlet extends HttpServlet {
+public class TreeServlet extends BaseServlet {
 
     private static final String KEY_TREE = "tree";
     private static final String KEY_ID = "id";
@@ -41,12 +41,13 @@ public class TreeServlet extends HttpServlet {
     private static final String KEY_MOVIE_FILE_COUNT = "movie_file_count";
     private static final String KEY_RESULTS = "results";
     private static final String KEY_IGNORED_ELEMENT_COUNT = "ignored_element_count";
+    private static final String ENCODING_UTF_8 = "UTF-8";
 
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        resp.setContentType("application/json");
+        resp.setContentType(CONTENT_TYPE_JSON);
 
         final PrintWriter out = resp.getWriter();
 
@@ -57,7 +58,7 @@ public class TreeServlet extends HttpServlet {
 
             //Has data
 
-            treeString = URLDecoder.decode(treeString, "UTF-8");
+            treeString = URLDecoder.decode(treeString, ENCODING_UTF_8);
 
             if (TREE_FILE_PATTERN.matcher(treeString).find()) {
 
@@ -95,6 +96,7 @@ public class TreeServlet extends HttpServlet {
                     } while (videoFileNameMatcher.find());
 
                     final JSONObject jResponse = new JSONObject();
+
                     try {
                         jResponse.put(KEY_ERROR, false);
                         jResponse.put(KEY_TOTAL_ELEMENTS_FOUND, totalFileCount);

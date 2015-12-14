@@ -1,6 +1,7 @@
 package com.shifz.rankix.sockets;
 
 
+import com.shifz.rankix.models.Movie;
 import com.shifz.rankix.utils.BlowIt;
 import com.shifz.rankix.utils.IMDBHelper;
 import org.json.JSONArray;
@@ -31,22 +32,30 @@ public class RankixSocket {
     @OnMessage
     public void onMessage(Session session, String movieNameAndId) {
 
+        //Getting client end point
         final RemoteEndpoint.Basic client = session.getBasicRemote();
-        String name = null;
-        try {
-            final JSONObject jMovie = new JSONObject(movieNameAndId);
-            final int id = jMovie.getInt(ID);
-            name = jMovie.getString(NAME);
-            final IMDBHelper imdbHelper = new IMDBHelper(name);
-            final String imdbRating = imdbHelper.getRating();
 
-            if (imdbRating != null) {
-                final JSONObject movieRating = new JSONObject();
-                movieRating.put(ERROR, false);
-                movieRating.put(ID, id);
-                movieRating.put(DATA, imdbRating);
-                movieRating.put(IMDB_ID, imdbHelper.getImdbId());
-                client.sendText(movieRating.toString());
+        //Increasing movie name visibility, so that it can available in catch statements.
+        String name = null;
+
+        try {
+
+            final JSONObject jMovie = new JSONObject(movieNameAndId);
+            final String id = jMovie.getString(ID);
+            name = jMovie.getString(NAME);
+            final IMDBHelper imdbHelper = new IMDBHelper(id, name);
+            final Movie movie = imdbHelper.getMovie();
+
+            if (movie != null) {
+
+                final JSONObject jMovieData = new JSONObject();
+                jMovieData.put(ERROR, false);
+                jMovieData.put(ID, movie.getId());
+                jMovieData.put(DATA, movie.getRating());
+                jMovieData.put(IMDB_ID, movie.getImdbId());
+
+                client.sendText(jMovieData.toString());
+
             } else {
                 client.sendText(BlowIt.getJSONError("Invalid movie name : " + name));
             }
@@ -54,14 +63,14 @@ public class RankixSocket {
         } catch (JSONException e) {
             e.printStackTrace();
             try {
-                client.sendText(BlowIt.getJSONError("JSON error occurred for "+name));
+                client.sendText(BlowIt.getJSONError("Invalid JSON format for " + name));
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
         } catch (IOException e) {
             e.printStackTrace();
             try {
-                client.sendText(BlowIt.getJSONError("Error occurred while crawling data for "+name));
+                client.sendText(BlowIt.getJSONError("Error while handling " + name));
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
@@ -76,7 +85,7 @@ public class RankixSocket {
 
     @OnClose
     public void onClose() {
-        System.out.println("RankixSocket Closed");
+        System.out.println("RankixSocket closed");
     }
 
 }
