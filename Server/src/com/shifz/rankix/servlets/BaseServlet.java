@@ -14,7 +14,7 @@ public class BaseServlet extends HttpServlet {
     protected static final String KEY_ID = "id";
     protected static final String KEY_NAME = "name";
 
-    private static final String KEY_ERROR = "error";
+    protected static final String KEY_ERROR = "error";
     private static final String KEY_DATA = "data";
 
     public static String getJSONError(final String reason){
