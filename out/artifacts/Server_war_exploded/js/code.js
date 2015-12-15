@@ -65,6 +65,46 @@ $(document).ready(function () {
         $("#bRankix").addClass("btn-primary").removeClass("btn-disabled");
     }
 
+    $('div#results').on('click', 'p.movieRow', function () {
+        var id = $(this).attr('id');
+
+
+        //Set loading
+
+        $("h4.modal-title").html("Loading...");
+        $("div.modal-body").hide();
+        $.ajax({
+            url: "imdbServlet",
+            type: "get",
+            data: {imdbId: id},
+            success: function (data) {
+
+                console.log(data);
+
+                consoleData("Success : "+data);
+
+                $("img#imgPoster").attr('src', data.poster_url);
+                $("b#bRating").text(data.rating);
+                $("b#bGender").text(data.gender);
+                $("b#bPlot").text(data.plot);
+
+                $("h4.modal-title").text(data.name);
+                $("div.modal-body").show();
+
+            },
+            error: function (xhr) {
+                consoleData("Error: "+xhr);
+            }
+        });
+
+        //Do ajax
+        //Check error
+        //Set data
+
+
+    });
+
+
     $("#bRankix").click(function () {
 
         postProgress(20, "Contacting TREE Manager...");
@@ -84,8 +124,9 @@ $(document).ready(function () {
         var treeData = $("#taTree").val();
 
         function showError(errorReason) {
-            $("div#results").prepend('<p id="0" class="text-danger"><strong>Error: </strong>'+errorReason+'</p>');
+            $("div#results").prepend('<p id="0" class="text-danger"><strong>Error: </strong>' + errorReason + '</p>');
         }
+
 
         if (treeData.trim().length == 0) {
             alert("Tree data can't be empty!");
@@ -95,10 +136,10 @@ $(document).ready(function () {
 
             freezeApp();
             $.post("http://localhost:8080/Tree", {tree: treeData})
-            //$.post("/Rankix/Tree", {tree: treeData})
+                //$.post("/Rankix/Tree", {tree: treeData})
                 .done(function (data) {
 
-                    postProgress(100,"TREE Managed!")
+                    postProgress(100, "TREE Managed!")
 
 
                     if (data.error) {
@@ -147,6 +188,7 @@ $(document).ready(function () {
 
                         $("div#results").html("");
 
+
                         data.results.forEach(function (obj) {
                             movieNameAndId[obj.id] = obj.name;
                             webSocket.send(JSON.stringify(obj));
@@ -158,13 +200,16 @@ $(document).ready(function () {
                             var data = JSON.parse(evt.data);
                             var movieName = movieNameAndId[data.id];
 
-                            function addResult(fontSize, movieName, data) {
-                                $("div#results").prepend('<p id="' + data + '" style="font-size:' + fontSize + 'px;">' + movieName + '<small class="text-muted"> has ' + data + '</small></p>');
+                            console.log(data);
+
+
+                            function addResult(fontSize, movieName, imdbId, imdbRating) {
+                                $("div#results").prepend('<p data-toggle="modal" data-target="#myModal" class="movieRow" id="' + imdbId + '" style="font-size:' + fontSize + 'px;">' + movieName + '<small class="text-muted"> has ' + imdbRating + '</small></p>');
                             }
 
                             if (!data.error) {
                                 var fontSize = data.data * 5;
-                                addResult(fontSize, movieName, data.data);
+                                addResult(fontSize, movieName, data.imdb_id, data.data);
                             } else {
 
                                 var myRegexp = /^IMDB rating is null for (.+)$/;
@@ -184,18 +229,17 @@ $(document).ready(function () {
                                 consoleData("---------------------------------");
                                 freeApp();
 
-                                $("div#results p").sort(function (a, b) {
-                                    console.log(a.id + " " + b.id);
-                                    return parseFloat(a.id) > parseFloat(b.id);
-                                }).each(function(){
-                                    var elem = $(this);
-                                    elem.remove();
-                                    $(elem).prependTo("div#results");
-                                });
+                                /*
+                                 //SORTING REMOVED
+                                 $("div#results p").sort(function (a, b) {
+                                 console.log(a.id + " " + b.id);
+                                 return parseFloat(a.id) > parseFloat(b.id);
+                                 }).each(function(){
+                                 var elem = $(this);
+                                 elem.remove();
+                                 $(elem).prependTo("div#results");
+                                 });*/
                             }
-
-                            //Sorting
-
 
                         };
 

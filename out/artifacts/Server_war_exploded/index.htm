@@ -17,7 +17,7 @@
 
 
     <div id="header">
-        <h1> Rankix</h1>
+        <h1"> Rankix</h1>
     </div>
 
     <div id="body">
@@ -27,7 +27,7 @@
                   placeholder="Paste your 'TREE /A /F | clip' data here"
                 ></textarea> <br>
 
-        <button id="bRankix" class="btn btn-primary"> Rankix!</button>
+        <button id="bRankix"  class="btn btn-primary"> Rankix!</button>
 
         <br><br><br>
 
@@ -42,13 +42,12 @@
         </div>
 
         <div id="results">
-        </div>
 
+        </div>
 
     </div>
 
     <!-- Trigger the modal with a button -->
-    <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>
 
     <!-- Modal -->
     <div class="modal fade" id="myModal" role="dialog">
@@ -64,16 +63,14 @@
 
                 <div class="modal-body">
 
-                    <div id="moviePoster">
-                        <img src="http://ia.media-imdb.com/images/M/MV5BMjIzMzAzMjQyM15BMl5BanBnXkFtZTcwNzM2NjcyOQ@@._V1._SY317_.jpg">
-                    </div>
+                    <img id="imgPoster" src="http://ia.media-imdb.com/images/M/MV5BMjIzMzAzMjQyM15BMl5BanBnXkFtZTcwNzM2NjcyOQ@@._V1._SY317_.jpg">
 
                     <div id="movieDetails">
-                        <p>Rating:<b> 7.5/10</b></p>
+                        <p>Rating:<b id="bRating"> 7.5/10</b></p>
 
-                        <p>Gender:<b> Action,Sci-Fi</b></p>
+                        <p>Gender:<b id="bGender"> Action,Sci-Fi</b></p>
 
-                        <p>Synopsis:<b> When Tony Stark's world is torn apart by a formidable terrorist called the
+                        <p>Plot:<b id="bPlot"> When Tony Stark's world is torn apart by a formidable terrorist called the
                             Mandarin, he starts an odyssey of rebuilding and retribution.</b></p>
                     </div>
 

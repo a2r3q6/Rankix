@@ -5,8 +5,10 @@ import com.shifz.rankix.models.Movie;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +25,7 @@ public class MovieBuff {
     private static final String KEY_RATING = "Rating";
 
     private static final Pattern GOOGLE_RATING_PATTERN = Pattern.compile("Rating:\\s(?<Rating>\\d+(?:\\.\\d)?)\\/10");
-    private static final String GOOGLE_SEARCH_URL_FORMAT = "http://www.google.com/search?q=%s%%20imdb%%20rating";
+    private static final String GOOGLE_SEARCH_URL_FORMAT = "http://google.com/search?q=%s%%20imdb%%20rating";
 
     private static final Pattern IMDB_URL_PATTERN = Pattern.compile("(?<imdbUrl>imdb\\.com\\/title\\/(?<imdbId>tt\\d{7}))");
     private static final Pattern IMDB_RATING_PATTERN = Pattern.compile("<div class=\"titlePageSprite star-box-giga-star\"> (\\d+(?:\\.\\d)?) <\\/div>");
@@ -43,7 +45,13 @@ public class MovieBuff {
         }
 
         //Un-optimized code - starts
-        final String googleUrlFormat = String.format(GOOGLE_SEARCH_URL_FORMAT, this.movie.getName());
+        final String googleUrlFormat;
+        try {
+            googleUrlFormat = String.format(GOOGLE_SEARCH_URL_FORMAT, URLEncoder.encode(this.movie.getName(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return null;
+        }
         final String googleData = getNetworkResponse(googleUrlFormat, true);
 
         //Checking if data is downloader
@@ -134,6 +142,8 @@ public class MovieBuff {
         try {
             //Creating url object
             URL urlOb = new URL(urlString);
+
+            System.out.println("Url: "+urlString);
 
             HttpURLConnection con = (HttpURLConnection) urlOb.openConnection();
 

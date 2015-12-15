@@ -22,3 +22,7 @@ div#console_data {
     max-height: 100%;
     overflow: auto;
 }
+
+p.movieRow{
+    cursor: pointer;
+}
