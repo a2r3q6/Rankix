@@ -2,9 +2,8 @@ package com.shifz.rankix.sockets;
 
 
 import com.shifz.rankix.models.Movie;
-import com.shifz.rankix.utils.BlowIt;
-import com.shifz.rankix.utils.IMDBHelper;
-import org.json.JSONArray;
+import com.shifz.rankix.servlets.BaseServlet;
+import com.shifz.rankix.utils.MovieBuff;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,8 +42,8 @@ public class RankixSocket {
             final JSONObject jMovie = new JSONObject(movieNameAndId);
             final String id = jMovie.getString(ID);
             name = jMovie.getString(NAME);
-            final IMDBHelper imdbHelper = new IMDBHelper(id, name);
-            final Movie movie = imdbHelper.getMovie();
+            final MovieBuff movieBuff = new MovieBuff(id, name);
+            final Movie movie = movieBuff.getMovie();
 
             if (movie != null) {
 
@@ -57,20 +56,20 @@ public class RankixSocket {
                 client.sendText(jMovieData.toString());
 
             } else {
-                client.sendText(BlowIt.getJSONError("Invalid movie name : " + name));
+                client.sendText(BaseServlet.getJSONError("Invalid movie name : " + name));
             }
 
         } catch (JSONException e) {
             e.printStackTrace();
             try {
-                client.sendText(BlowIt.getJSONError("Invalid JSON format for " + name));
+                client.sendText(BaseServlet.getJSONError("Invalid JSON format for " + name));
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
         } catch (IOException e) {
             e.printStackTrace();
             try {
-                client.sendText(BlowIt.getJSONError("Error while handling " + name));
+                client.sendText(BaseServlet.getJSONError("Error while handling " + name));
             } catch (IOException e1) {
                 e1.printStackTrace();
             }

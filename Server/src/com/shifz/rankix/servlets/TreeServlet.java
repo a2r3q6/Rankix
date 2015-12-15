@@ -110,17 +110,17 @@ public class TreeServlet extends BaseServlet {
                     out.write(jResponse.toString());
 
                 } else {
-                    out.write(BlowIt.getJSONError("No movie file found"));
+                    out.write(getJSONError("No movie file found"));
                 }
 
 
             } else {
-                out.write(BlowIt.getJSONError("Invalid TREE Format"));
+                out.write(getJSONError("Invalid TREE Format"));
             }
 
         } else {
             //Parameter missing
-            out.write(BlowIt.getJSONError("Missing tree parameter"));
+            out.write(getJSONError("Missing tree parameter"));
         }
 
         out.flush();

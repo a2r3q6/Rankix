@@ -17,7 +17,7 @@ import java.net.URL;
  * Created by shifar on 12/12/15.
  */
 @WebServlet(urlPatterns = {"/imdbServlet"})
-public class IMDBServlet extends HttpServlet {
+public class IMDBServlet extends BaseServlet {
 
     private static final String KEY_IMDB_ID = "imdbId";
     private static final String REGEX_IMDBID = "tt\\d{7}";
@@ -49,11 +49,11 @@ public class IMDBServlet extends HttpServlet {
 
                 br.close();
             } else {
-                out.write(BlowIt.getJSONError("Movie not found"));
+                out.write(getJSONError("Movie not found"));
             }
 
         } else {
-            out.write(BlowIt.getJSONError("Invalid imdbId"));
+            out.write(getJSONError("Invalid imdbId"));
         }
 
         out.flush();

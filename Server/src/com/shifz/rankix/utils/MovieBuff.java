@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Shifar Shifz on 8/31/2015 12:04 PM.
  */
-public class IMDBHelper {
+public class MovieBuff {
 
     private static final String FAKE_USER_AGENT = "ExampleBot 1.0 (+http://example.com/bot)";
 
@@ -31,7 +31,7 @@ public class IMDBHelper {
     private Movie movie;
 
 
-    public IMDBHelper(final String id, final String movieName) {
+    public MovieBuff(final String id, final String movieName) {
         this.movie = new Movie(id, movieName);
     }
 
