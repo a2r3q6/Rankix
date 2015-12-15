@@ -1,5 +1,18 @@
 $(document).ready(function () {
 
+    var isDebugMode = false;
+
+    var webSocketAddress, imdbServletUrl, treeUrl;
+
+    if (isDebugMode) {
+        webSocketAddress = "ws://localhost:8080/RankixSocket";
+        imdbServletUrl = "/imdbServlet";
+        treeUrl = "/Tree";
+    } else {
+        webSocketAddress = "ws://shifar-shifz.rhcloud.com:8000/Rankix/RankixSocket";
+        imdbServletUrl = "/Rankix/imdbServlet";
+        treeUrl = "/Rankix/Tree";
+    }
 
     var isWorking = true;
 
@@ -17,8 +30,7 @@ $(document).ready(function () {
     }
 
 
-    //webSocket = new WebSocket("ws://shifar-shifz.rhcloud.com:8000/Rankix/RankixSocket");
-    webSocket = new WebSocket("ws://localhost:8080/RankixSocket");
+    webSocket = new WebSocket(webSocketAddress);
 
     consoleData("CONNECTING...");
 
@@ -70,20 +82,27 @@ $(document).ready(function () {
 
 
         //Set loading
-
         $("h4.modal-title").html("Loading...");
         $("div.modal-body").hide();
+
+
         $.ajax({
-            url: "imdbServlet",
+            url: imdbServletUrl,
             type: "get",
             data: {imdbId: id},
             success: function (data) {
 
                 console.log(data);
 
-                consoleData("Success : "+data);
+                consoleData("Success : " + data);
 
-                $("img#imgPoster").attr('src', data.poster_url);
+                var img = $('<img  />').load(function () {
+                    $("$imgPoster").html("");
+                    $("#imgPoster").append(img);
+                }).error(function () {
+                    alert('broken image!');
+                }).attr('src', data.poster_url);
+
                 $("b#bRating").text(data.rating);
                 $("b#bGender").text(data.gender);
                 $("b#bPlot").text(data.plot);
@@ -93,7 +112,7 @@ $(document).ready(function () {
 
             },
             error: function (xhr) {
-                consoleData("Error: "+xhr);
+                consoleData("Error: " + xhr);
             }
         });
 
@@ -111,8 +130,8 @@ $(document).ready(function () {
 
         if (webSocket == null || webSocket.readyState != 1) {
             consoleData("Reopening new socket...");
-            //webSocket = new WebSocket("ws://shifar-shifz.rhcloud.com:8000/Rankix/RankixSocket");
-            webSocket = new WebSocket("ws://localhost:8080/RankixSocket");
+
+            webSocket = new WebSocket(webSocketAddress);
             isWorking = false;
         }
 
@@ -135,8 +154,7 @@ $(document).ready(function () {
             showProgressBar();
 
             freezeApp();
-            $.post("http://localhost:8080/Tree", {tree: treeData})
-                //$.post("/Rankix/Tree", {tree: treeData})
+            $.post(treeUrl, {tree: treeData})
                 .done(function (data) {
 
                     postProgress(100, "TREE Managed!")
