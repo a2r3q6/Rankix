@@ -26,3 +26,10 @@ div#console_data {
 p.movieRow{
     cursor: pointer;
 }
+div#imgPoster {
+    margin-bottom: 18px;
+}
+
+p b {
+    margin-left: 5px;
+}

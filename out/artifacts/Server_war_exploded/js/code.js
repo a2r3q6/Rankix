@@ -80,11 +80,10 @@ $(document).ready(function () {
     $('div#results').on('click', 'p.movieRow', function () {
         var id = $(this).attr('id');
 
-
         //Set loading
         $("h4.modal-title").html("Loading...");
         $("div.modal-body").hide();
-
+        $("#imgPoster").html("");
 
         $.ajax({
             url: imdbServletUrl,
@@ -92,15 +91,14 @@ $(document).ready(function () {
             data: {imdbId: id},
             success: function (data) {
 
-                console.log(data);
 
-                consoleData("Success : " + data);
+                consoleData("Movie loaded "+data.name);
 
                 var img = $('<img  />').load(function () {
-                    $("$imgPoster").html("");
+                    $("#imgPoster").html("");
                     $("#imgPoster").append(img);
                 }).error(function () {
-                    alert('broken image!');
+                    consoleData("Failed to load image");
                 }).attr('src', data.poster_url);
 
                 $("b#bRating").text(data.rating);
@@ -108,11 +106,11 @@ $(document).ready(function () {
                 $("b#bPlot").text(data.plot);
 
                 $("h4.modal-title").text(data.name);
-                $("div.modal-body").show();
+                $("div.modal-body").slideDown(500 );
 
             },
             error: function (xhr) {
-                consoleData("Error: " + xhr);
+                consoleData("Error while " + xhr.data);
             }
         });
 
