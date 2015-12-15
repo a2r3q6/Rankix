@@ -1,8 +1,11 @@
 $(document).ready(function () {
 
-    var isDebugMode = false;
+    var isDebugMode = true;
 
     var webSocketAddress, imdbServletUrl, treeUrl;
+
+    var movieCache = new Array();
+    var movieRatingCache = new Array();
 
     if (isDebugMode) {
         webSocketAddress = "ws://localhost:8080/RankixSocket";
@@ -85,39 +88,50 @@ $(document).ready(function () {
         $("div.modal-body").hide();
         $("#imgPoster").html("");
 
-        $.ajax({
-            url: imdbServletUrl,
-            type: "get",
-            data: {imdbId: id},
-            success: function (data) {
+        if (id in movieCache) {
+
+            consoleData("Data available in cache  for " + movieCache[id].name);
+            showMovieDetailedDialog(movieCache[id]);
+
+        }else{
 
 
-                consoleData("Movie loaded "+data.name);
+            //Not available in cache so download
+            $.ajax({
+                url: imdbServletUrl,
+                type: "get",
+                data: {imdbId: id},
+                success: function (data) {
 
-                var img = $('<img  />').load(function () {
-                    $("#imgPoster").html("");
-                    $("#imgPoster").append(img);
-                }).error(function () {
-                    consoleData("Failed to load image");
-                }).attr('src', data.poster_url);
+                    movieCache[id] = data;
 
-                $("b#bRating").text(data.rating);
-                $("b#bGender").text(data.gender);
-                $("b#bPlot").text(data.plot);
+                    consoleData("Movie loaded " + data.name);
 
-                $("h4.modal-title").text(data.name);
-                $("div.modal-body").slideDown(500 );
+                    showMovieDetailedDialog(data);
 
-            },
-            error: function (xhr) {
-                consoleData("Error while " + xhr.data);
-            }
-        });
 
-        //Do ajax
-        //Check error
-        //Set data
+                },
+                error: function (xhr) {
+                    consoleData("Error while " + xhr.data);
+                }
+            });
+        }
 
+        function showMovieDetailedDialog(data) {
+            var img = $('<img  />').load(function () {
+                $("#imgPoster").html("");
+                $("#imgPoster").append(img);
+            }).error(function () {
+                consoleData("Failed to load image");
+            }).attr('src', data.poster_url);
+
+            $("b#bRating").text(data.rating);
+            $("b#bGender").text(data.gender);
+            $("b#bPlot").text(data.plot);
+
+            $("h4.modal-title").text(data.name);
+            $("div.modal-body").slideDown(500);
+        }
 
     });
 
@@ -204,16 +218,7 @@ $(document).ready(function () {
 
                         $("div#results").html("");
 
-
-                        data.results.forEach(function (obj) {
-                            movieNameAndId[obj.id] = obj.name;
-                            webSocket.send(JSON.stringify(obj));
-                        });
-
-
-                        webSocket.onmessage = function (evt) {
-
-                            var data = JSON.parse(evt.data);
+                        function handleData(data) {
                             var movieName = movieNameAndId[data.id];
 
                             console.log(data);
@@ -256,6 +261,34 @@ $(document).ready(function () {
                                  $(elem).prependTo("div#results");
                                  });*/
                             }
+                        }
+
+
+                        data.results.forEach(function (obj) {
+
+                            if(obj.id in movieRatingCache){
+
+                                consoleData("Downloading from cache : "+obj.name);
+                                handleData(movieRatingCache[obj.id]);
+
+                            }else{
+
+                                movieNameAndId[obj.id] = obj.name;
+                                webSocket.send(JSON.stringify(obj));
+                            }
+
+                        });
+
+
+                        webSocket.onmessage = function (evt) {
+
+                            var data = JSON.parse(evt.data);
+
+                            //Adding to cache
+                            movieRatingCache[data.id] = data;
+
+
+                            handleData(data);
 
                         };
 

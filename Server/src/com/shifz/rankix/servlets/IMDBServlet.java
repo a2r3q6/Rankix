@@ -75,7 +75,7 @@ public class IMDBServlet extends BaseServlet {
 
                 final JSONObject jMovie = new JSONObject();
                 try {
-                    jMovie.put(KEY_ERROR,false);
+                    jMovie.put(KEY_ERROR, false);
                     jMovie.put(KEY_NAME, movieName);
                     jMovie.put(KEY_GENDER, gender);
                     jMovie.put(KEY_RATING, rating);
@@ -86,7 +86,7 @@ public class IMDBServlet extends BaseServlet {
                 }
 
                 out.write(jMovie.toString());
-                
+
             } else {
                 out.write(getJSONError("Movie not found"));
             }
