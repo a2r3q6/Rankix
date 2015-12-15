@@ -1,8 +1,10 @@
 package com.shifz.rankix.sockets;
 
 
+import com.shifz.rankix.database.tables.Movies;
 import com.shifz.rankix.models.Movie;
 import com.shifz.rankix.servlets.BaseServlet;
+import com.shifz.rankix.utils.BlowIt;
 import com.shifz.rankix.utils.MovieBuff;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,9 +25,12 @@ public class RankixSocket {
     private static final String DATA = "data";
     private static final String IMDB_ID = "imdb_id";
 
+    private Movies movies;
+
     @OnOpen
     public void onOpen() {
         System.out.println("Connected to RankixSocket");
+        movies = Movies.getInstance();
     }
 
     @OnMessage
@@ -42,22 +47,43 @@ public class RankixSocket {
             final JSONObject jMovie = new JSONObject(movieNameAndId);
             final String id = jMovie.getString(ID);
             name = jMovie.getString(NAME);
-            final MovieBuff movieBuff = new MovieBuff(id, name);
-            final Movie movie = movieBuff.getMovie();
+
+            Movie movie = movies.getMovie(Movies.COLUMN_NAME, name);
 
             if (movie != null) {
 
-                final JSONObject jMovieData = new JSONObject();
-                jMovieData.put(ERROR, false);
-                jMovieData.put(ID, movie.getId());
-                jMovieData.put(DATA, movie.getRating());
-                jMovieData.put(IMDB_ID, movie.getImdbId());
-
-                client.sendText(jMovieData.toString());
+                System.out.println("Movie available in database " + name);
+                if (movie.isValidMovie()) {
+                    client.sendText(getJSONMovieData(movie));
+                } else {
+                    client.sendText(BaseServlet.getJSONError("Invalid movie name " + name));
+                }
 
             } else {
-                client.sendText(BaseServlet.getJSONError("Invalid movie name : " + name));
+
+                final MovieBuff movieBuff = new MovieBuff(id, name);
+                movie = movieBuff.getMovie();
+
+                if (movie != null) {
+
+                    final boolean isMovieAdded = movies.add(movie);
+                    if (!isMovieAdded) {
+                        throw new Error("Failed to add new movie " + name);
+                    }
+
+                    client.sendText(getJSONMovieData(movie));
+                } else {
+
+                    //Invalid movie, adding to history
+                    final boolean isBadMovieAdded = movies.addBadMovie(name);
+                    if (!isBadMovieAdded) {
+                        throw new Error("Failed to add bad movie " + name);
+                    }
+
+                    client.sendText(BaseServlet.getJSONError("Invalid movie name : " + name));
+                }
             }
+
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -74,6 +100,25 @@ public class RankixSocket {
                 e1.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Returns response JSON string
+     *
+     * @param movie
+     * @return
+     */
+    private static String getJSONMovieData(Movie movie) {
+        final JSONObject jMovieData = new JSONObject();
+        try {
+            jMovieData.put(ERROR, false);
+            jMovieData.put(ID, movie.getId());
+            jMovieData.put(DATA, movie.getRating());
+            jMovieData.put(IMDB_ID, movie.getImdbId());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jMovieData.toString();
     }
 
     @OnError

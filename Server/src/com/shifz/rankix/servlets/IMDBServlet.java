@@ -1,5 +1,7 @@
 package com.shifz.rankix.servlets;
 
+import com.shifz.rankix.database.tables.Movies;
+import com.shifz.rankix.models.Movie;
 import com.shifz.rankix.utils.BlowIt;
 import com.shifz.rankix.utils.IMDBDotComHelper;
 import org.json.JSONException;
@@ -37,59 +39,62 @@ public class IMDBServlet extends BaseServlet {
         final String imdbId = req.getParameter(KEY_IMDB_ID);
         if (imdbId != null && imdbId.matches(REGEX_IMDBID)) {
 
-            final URL imdbUrl = new URL(String.format(IMDB_URL_FORMAT, imdbId));
-            final HttpURLConnection con = (HttpURLConnection) imdbUrl.openConnection();
+            //Checking db
+            final Movies movies = Movies.getInstance();
+            Movie movie = movies.getMovie(Movies.COLUMN_IMDB_ID, imdbId);
 
-            if (con.getResponseCode() == 200) {
-
-                final BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                final StringBuilder sb = new StringBuilder();
-
-                String line;
-                while ((line = br.readLine()) != null) {
-                    sb.append(line.trim());
-                }
-
-                br.close();
-
-                final IMDBDotComHelper imdbHelper = new IMDBDotComHelper(sb.toString());
-
-                //Parsing MovieName
-                final String movieName = imdbHelper.getMovieName();
-                //Parsing gender
-                final String gender = imdbHelper.getGender();
-                //Parsing Gender
-                final String rating = imdbHelper.getRating();
-                //Parsing Plot
-                final String plot = imdbHelper.getPlot();
-                //Parsing PosterUrl
-                final String posterUrl = imdbHelper.getPosterUrl(movieName);
-
-                System.out.println("-----------------------------------------------");
-                System.out.println("MovieName: " + movieName);
-                System.out.println("Gender: " + gender);
-                System.out.println("Rating: " + rating);
-                System.out.println("Plot: " + plot);
-                System.out.println("PosterUrl: " + posterUrl);
-                System.out.println("-----------------------------------------------");
-
-                final JSONObject jMovie = new JSONObject();
-                try {
-                    jMovie.put(KEY_ERROR, false);
-                    jMovie.put(KEY_NAME, movieName);
-                    jMovie.put(KEY_GENDER, gender);
-                    jMovie.put(KEY_RATING, rating);
-                    jMovie.put(KEY_PLOT, plot);
-                    jMovie.put(KEY_POSTER_URL, posterUrl);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                out.write(jMovie.toString());
+            if (movie != null && !movie.isRatingExpired()) {
+                out.write(getJSONMovieString(movie));
 
             } else {
-                out.write(getJSONError("Movie not found"));
+
+                //Download new data
+                final URL imdbUrl = new URL(String.format(IMDB_URL_FORMAT, imdbId));
+                final HttpURLConnection con = (HttpURLConnection) imdbUrl.openConnection();
+
+                if (con.getResponseCode() == 200) {
+
+                    final BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    final StringBuilder sb = new StringBuilder();
+
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        sb.append(line.trim());
+                    }
+
+                    br.close();
+
+                    final IMDBDotComHelper imdbHelper = new IMDBDotComHelper(imdbId, sb.toString());
+
+                    if (movie != null) {
+
+                        //Just the rating has expired.
+                        movie.setRating(imdbHelper.getRating());
+
+                        //Updating rating column only
+                        final boolean isUpdated = movies.update(movie.getId(), Movies.COLUMN_RATING, movie.getRating());
+
+                        if (!isUpdated) {
+                            throw new Error("Failed to update the rating");
+                        }
+
+                    } else {
+                        //New movie
+                        movie = imdbHelper.getMovie();
+                        final boolean isMovieAdded = movies.add(movie);
+
+                        if (!isMovieAdded) {
+                            throw new Error("Failed to add new movie");
+                        }
+                    }
+
+                    out.write(getJSONMovieString(movie));
+
+                } else {
+                    out.write(getJSONError("Movie not found"));
+                }
             }
+
 
         } else {
             out.write(getJSONError("Invalid imdbId"));
@@ -98,6 +103,21 @@ public class IMDBServlet extends BaseServlet {
         out.flush();
         out.close();
 
+    }
+
+    private static String getJSONMovieString(Movie movie) {
+        final JSONObject jMovie = new JSONObject();
+        try {
+            jMovie.put(KEY_ERROR, false);
+            jMovie.put(KEY_NAME, movie.getName());
+            jMovie.put(KEY_GENDER, movie.getGender());
+            jMovie.put(KEY_RATING, movie.getRating());
+            jMovie.put(KEY_PLOT, movie.getPlot());
+            jMovie.put(KEY_POSTER_URL, movie.getPosterUrl());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jMovie.toString();
     }
 
 

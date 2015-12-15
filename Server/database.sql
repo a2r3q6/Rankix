@@ -1,0 +1,12 @@
+CREATE TABLE movies(
+	id INT NOT NULL AUTO_INCREMENT,
+	imdb_id VARCHAR(9),
+	name VARCHAR(100) NOT NULL,
+	gender VARCHAR(100),
+	rating VARCHAR(4),
+	plot TEXT,
+	poster_url TEXT,
+	edited_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+	created_at TIMESTAMP NOT NULL,
+	PRIMARY KEY(id)
+);
