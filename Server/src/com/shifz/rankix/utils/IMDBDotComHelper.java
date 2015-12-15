@@ -14,6 +14,8 @@ public class IMDBDotComHelper {
     private static final java.lang.String MOVIE_RATING_EXP2_REGEX = "</span></strong>";
     private static final java.lang.String MOVIE_PLOT_EXP1_REGEX = "<div class=\"summary_text\" itemprop=\"description\">";
     private static final java.lang.String MOVE_PLOT_EXP2_REGEX = "</div><div class=\"credit_summary_item\">";
+    private static final java.lang.String MOVIE_POSTER_EXP1_REGEX = "itemprop=\"image\"";
+    private static final java.lang.String MOVIE_POSTER_EXP2_REGEX = "src=\"";
     private final String imdbHtml;
 
     public IMDBDotComHelper(String imdbHtml) {
@@ -43,8 +45,11 @@ public class IMDBDotComHelper {
         return exp1[1].split(MOVE_PLOT_EXP2_REGEX)[0];
     }
 
-    public String getPosterUrl() {
-        return null;
+    public String getPosterUrl(final String movieName) {
+        final String[] exp1 = this.imdbHtml.split(String.format("<img alt=\"%s Poster", movieName));
+        final String exp2 = exp1[1].split(MOVIE_POSTER_EXP1_REGEX)[0];
+        String imageUrl = exp2.split(MOVIE_POSTER_EXP2_REGEX)[1];
+        return imageUrl.substring(0, imageUrl.length() - 1);
     }
 
     public String getGender() {

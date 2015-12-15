@@ -47,7 +47,7 @@ public class Tester {
         //Parsing Plot
         final String plot = imdbHelper.getPlot();
         //Parsing PosterUrl
-        final String posterUrl = imdbHelper.getPosterUrl();
+        final String posterUrl = imdbHelper.getPosterUrl(movieName);
 
         System.out.println("MovieName: " + movieName);
         System.out.println("Gender: " + gender);
