@@ -2,16 +2,7 @@
 
 # This project is under development ...
 
-
-but we've a stable version running. Some of the features are listed below. Read on...
-
-### New Features
-
-1. Sorting enabled
-2. Server Cacheing
-3. Local Cacheing
-4. Detailed Movie View 
-5. and many more improvements.
+### but we've a stable version running. Some of the features are listed below. Read on...
 
 Rankix is an IMDB Helper tool which can fetch the IMDB Ratings with in **MILLISECONDS**.
 
@@ -108,16 +99,18 @@ if you want to remove the Rankixed name and keep the old name, then run
 rankix -u "D:/Videos/Movies"
 ```
 
-PS: double click the `.exe` file to get into the Interactive mode.
+
+DOUBLE CLICK
+============
+double click the `.exe` file to get into the Interactive mode.
 
 
 TODOs
 ===========
 
-1. Improve html/cs/js.
-2. Implement more cacheing features.
-3. Make an Android version.
-
+1. OneDay database integration.
+2. Detailed view of the selected movie (WEB).
+3. Increase the efficiency of MNS (Movie Name Sort) Algorithm (WEB and CONSOLE).
 
 
 NOTE
