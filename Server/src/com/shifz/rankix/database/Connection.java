@@ -8,10 +8,10 @@ import java.sql.SQLException;
  */
 public class Connection {
 
-    private static final boolean debugMode = true;
+    private static final boolean debugMode = false;
 
     //Local credentials
-    private static final String LC_HOST = "rh-server";
+    private static final String LC_HOST = "192.168.0.100";
     private static final String LC_PORT = "3306";
     private static final String LC_USERNAME = "root";
     private static final String LC_PASSWORD = "admin123";

@@ -47,7 +47,7 @@ public class MovieBuff {
         //Un-optimized code - starts
         final String googleUrlFormat;
         try {
-            googleUrlFormat = String.format(GOOGLE_SEARCH_URL_FORMAT, URLEncoder.encode(this.movie.getName(), "UTF-8"));
+            googleUrlFormat = String.format(GOOGLE_SEARCH_URL_FORMAT, URLEncoder.encode(this.movie.getFileName(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return null;
@@ -143,7 +143,7 @@ public class MovieBuff {
             //Creating url object
             URL urlOb = new URL(urlString);
 
-            System.out.println("Url: "+urlString);
+            System.out.println("Url: " + urlString);
 
             HttpURLConnection con = (HttpURLConnection) urlOb.openConnection();
 

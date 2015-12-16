@@ -2,14 +2,12 @@ package com.shifz.rankix.servlets;
 
 import com.shifz.rankix.database.tables.Movies;
 import com.shifz.rankix.models.Movie;
-import com.shifz.rankix.utils.BlowIt;
 import com.shifz.rankix.utils.IMDBDotComHelper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -37,16 +35,19 @@ public class IMDBServlet extends BaseServlet {
         final PrintWriter out = resp.getWriter();
 
         final String imdbId = req.getParameter(KEY_IMDB_ID);
+        System.out.println("imdbId : " + imdbId);
         if (imdbId != null && imdbId.matches(REGEX_IMDBID)) {
 
             //Checking db
             final Movies movies = Movies.getInstance();
-            Movie movie = movies.getMovie(Movies.COLUMN_IMDB_ID, imdbId);
+            Movie dbMovie = movies.getMovie(Movies.COLUMN_IMDB_ID, imdbId);
 
-            if (movie != null && !movie.isRatingExpired()) {
-                out.write(getJSONMovieString(movie));
-
+            if (dbMovie != null && dbMovie.isValid()) {
+                System.out.println("Rating not expired, so showing from local");
+                out.write(getJSONMovieString(dbMovie));
             } else {
+
+                System.out.println("Downloading movie data from...");
 
                 //Download new data
                 final URL imdbUrl = new URL(String.format(IMDB_URL_FORMAT, imdbId));
@@ -66,29 +67,59 @@ public class IMDBServlet extends BaseServlet {
 
                     final IMDBDotComHelper imdbHelper = new IMDBDotComHelper(imdbId, sb.toString());
 
-                    if (movie != null) {
+                    if (dbMovie != null) {
 
-                        //Just the rating has expired.
-                        movie.setRating(imdbHelper.getRating());
+                        //Updating rating
+                        dbMovie.setRating(imdbHelper.getRating());
 
-                        //Updating rating column only
-                        final boolean isUpdated = movies.update(movie.getId(), Movies.COLUMN_RATING, movie.getRating());
+                        if (dbMovie.hasMoreDetails()) {
 
-                        if (!isUpdated) {
-                            throw new Error("Failed to update the rating");
+                            System.out.println("Movie has more details, so only updating the rating");
+
+                            //Updating new rating...
+                            System.out.println("Updating db...");
+
+                            //Updating rating column only
+                            final boolean isUpdated = movies.updateRating(dbMovie.getId(), dbMovie.getRating());
+
+                            if (!isUpdated) {
+                                throw new Error("Failed to update the rating");
+                            }
+
+                        } else {
+
+                            System.out.println("Movie hasn't more detail so updating more details");
+
+                            final Movie newMovie = imdbHelper.getMovie();
+
+                            dbMovie.setMovieName(newMovie.getMovieName());
+                            dbMovie.setGender(newMovie.getGender());
+                            dbMovie.setPlot(newMovie.getPlot());
+                            dbMovie.setPosterUrl(newMovie.getPosterUrl());
+
+                            final boolean isMoreDetailsAdded = movies.update(dbMovie);
+                            if (!isMoreDetailsAdded) {
+                                throw new Error("Failed to add more details to the movie ");
+                            }
                         }
 
+                        //Finally showing result
+                        out.write(getJSONMovieString(dbMovie));
+
                     } else {
+
+
                         //New movie
-                        movie = imdbHelper.getMovie();
-                        final boolean isMovieAdded = movies.add(movie);
+                        final Movie newMovie = imdbHelper.getMovie();
+                        final boolean isMovieAdded = movies.add(newMovie);
 
                         if (!isMovieAdded) {
                             throw new Error("Failed to add new movie");
                         }
-                    }
 
-                    out.write(getJSONMovieString(movie));
+                        //Finally showing result
+                        out.write(getJSONMovieString(newMovie));
+                    }
 
                 } else {
                     out.write(getJSONError("Movie not found"));
@@ -109,11 +140,13 @@ public class IMDBServlet extends BaseServlet {
         final JSONObject jMovie = new JSONObject();
         try {
             jMovie.put(KEY_ERROR, false);
-            jMovie.put(KEY_NAME, movie.getName());
+            jMovie.put(KEY_NAME, movie.getMovieName());
             jMovie.put(KEY_GENDER, movie.getGender());
             jMovie.put(KEY_RATING, movie.getRating());
             jMovie.put(KEY_PLOT, movie.getPlot());
             jMovie.put(KEY_POSTER_URL, movie.getPosterUrl());
+
+            System.out.println("Showing movie : " + movie);
         } catch (JSONException e) {
             e.printStackTrace();
         }

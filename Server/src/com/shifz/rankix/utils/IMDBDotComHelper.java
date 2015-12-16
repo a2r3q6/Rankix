@@ -20,6 +20,7 @@ public final class IMDBDotComHelper {
     private static final java.lang.String MOVIE_POSTER_EXP2_REGEX = "src=\"";
     private final String imdbId, imdbHtml;
     private Movie movie;
+    private String rating;
 
     public IMDBDotComHelper(String imdbId, String imdbHtml) {
         this.imdbId = imdbId;
@@ -32,8 +33,11 @@ public final class IMDBDotComHelper {
     }
 
     public String getRating() {
-        final String[] exp1 = this.imdbHtml.split(MOVIE_RATING_EXP1_REGEX);
-        return exp1[1].split(MOVIE_RATING_EXP2_REGEX)[0];
+        if (this.rating == null) {
+            final String[] exp1 = this.imdbHtml.split(MOVIE_RATING_EXP1_REGEX);
+            this.rating = exp1[1].split(MOVIE_RATING_EXP2_REGEX)[0];
+        }
+        return this.rating;
     }
 
     private static void debug(String[] exp1) {
@@ -69,8 +73,8 @@ public final class IMDBDotComHelper {
             final String movieName = getMovieName();
             //Parsing gender
             final String gender = getGender();
-            //Parsing Gender
-            final String rating = getRating();
+            //Parsing Gender , getRating() is public so there's a chance to  get called before getMovie().
+            final String rating = this.rating == null ? getRating() : this.rating;
             //Parsing Plot
             final String plot = getPlot();
             //Parsing PosterUrl

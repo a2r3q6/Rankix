@@ -1,9 +1,9 @@
 html {
-  margin:20px 50px 50px 50px;
+    margin:20px 50px 50px 50px;
 }
 
 textarea#taTree{
-	height:200px;	
+    height:200px;
 }
 
 p{
@@ -32,4 +32,8 @@ div#imgPoster {
 
 p b {
     margin-left: 5px;
+}
+
+.modal-footer {
+    border-top: none;
 }

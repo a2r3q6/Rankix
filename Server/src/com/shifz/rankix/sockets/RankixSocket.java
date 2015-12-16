@@ -4,7 +4,6 @@ package com.shifz.rankix.sockets;
 import com.shifz.rankix.database.tables.Movies;
 import com.shifz.rankix.models.Movie;
 import com.shifz.rankix.servlets.BaseServlet;
-import com.shifz.rankix.utils.BlowIt;
 import com.shifz.rankix.utils.MovieBuff;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,30 +47,43 @@ public class RankixSocket {
             final String id = jMovie.getString(ID);
             name = jMovie.getString(NAME);
 
-            Movie movie = movies.getMovie(Movies.COLUMN_NAME, name);
+            Movie dbMovie = movies.getBasicMovie(Movies.COLUMN_FILE_NAME, name);
 
-            if (movie != null) {
+            if (dbMovie != null && dbMovie.hasValidRating()) {
 
                 System.out.println("Movie available in database " + name);
-                if (movie.isValidMovie()) {
-                    client.sendText(getJSONMovieData(movie));
+                if (dbMovie.getRating() != null) {
+                    System.out.println("Valid movie and has rating");
+                    client.sendText(getJSONMovieData(id, dbMovie));
                 } else {
+                    System.out.println("The file name already tried and failed...");
                     client.sendText(BaseServlet.getJSONError("Invalid movie name " + name));
                 }
 
             } else {
 
                 final MovieBuff movieBuff = new MovieBuff(id, name);
-                movie = movieBuff.getMovie();
+                final Movie newMovie = movieBuff.getMovie();
 
-                if (movie != null) {
+                if (newMovie != null) {
 
-                    final boolean isMovieAdded = movies.add(movie);
-                    if (!isMovieAdded) {
-                        throw new Error("Failed to add new movie " + name);
+                    if (dbMovie != null) {
+                        //Updating rating
+                        final boolean isRatingUpdated = movies.updateRating(dbMovie.getId(), newMovie.getRating());
+                        if (!isRatingUpdated) {
+                            throw new Error("Failed to update rating...");
+                        }
+                    } else {
+                        //Adding new movie
+                        final boolean isMovieAdded = movies.add(newMovie);
+                        if (!isMovieAdded) {
+                            throw new Error("Failed to add new movie " + name);
+                        }
                     }
 
-                    client.sendText(getJSONMovieData(movie));
+
+                    client.sendText(getJSONMovieData(id, newMovie));
+
                 } else {
 
                     //Invalid movie, adding to history
@@ -105,14 +117,15 @@ public class RankixSocket {
     /**
      * Returns response JSON string
      *
+     * @param id
      * @param movie
      * @return
      */
-    private static String getJSONMovieData(Movie movie) {
+    private static String getJSONMovieData(String id, Movie movie) {
         final JSONObject jMovieData = new JSONObject();
         try {
             jMovieData.put(ERROR, false);
-            jMovieData.put(ID, movie.getId());
+            jMovieData.put(ID, id);
             jMovieData.put(DATA, movie.getRating());
             jMovieData.put(IMDB_ID, movie.getImdbId());
         } catch (JSONException e) {

@@ -1,20 +1,24 @@
 $(document).ready(function () {
 
-    var isDebugMode = true;
-
-    var webSocketAddress, imdbServletUrl, treeUrl;
+    $("#bSort").hide();
 
     var movieCache = new Array();
-    var movieRatingCache = new Array();
+    //var movieRatingCache = new Array();
+
+    var isDebugMode = false;
+
+    var webSocketAddress, imdbServletUrl, treeUrl, sortUrl;
 
     if (isDebugMode) {
         webSocketAddress = "ws://localhost:8080/RankixSocket";
         imdbServletUrl = "/imdbServlet";
         treeUrl = "/Tree";
+        sortUrl = "/sortServlet";
     } else {
         webSocketAddress = "ws://shifar-shifz.rhcloud.com:8000/Rankix/RankixSocket";
         imdbServletUrl = "/Rankix/imdbServlet";
         treeUrl = "/Rankix/Tree";
+        sortUrl = "/Rankix/sortServlet";
     }
 
     var isWorking = true;
@@ -44,6 +48,39 @@ $(document).ready(function () {
         freeApp();
         consoleData("CONNECTED TO SOCKET :)");
     };
+
+
+    $("#bSort").click(function () {
+
+        var resultHtml = $("#results").html();
+        postProgress(30, "Sorting movies...");
+
+        $.ajax({
+            url: sortUrl,
+            type: "get",
+            data: {results: resultHtml},
+            success: function (response) {
+
+                postProgress(100,"Finished");
+                hideProgress();
+
+                console.log(response);
+
+                if (!response.error) {
+                    $("#bSort").fadeOut(1000);
+                    $("#results").html(response.results);
+                } else {
+                    alert(response.message);
+                }
+
+            },
+            error: function (xhr) {
+                hideProgress();
+                consoleData("Error while " + xhr.data);
+            }
+        });
+
+    });
 
 
     function postProgress(perc, sentance) {
@@ -80,63 +117,14 @@ $(document).ready(function () {
         $("#bRankix").addClass("btn-primary").removeClass("btn-disabled");
     }
 
-    $('div#results').on('click', 'p.movieRow', function () {
-        var id = $(this).attr('id');
-
-        //Set loading
-        $("h4.modal-title").html("Loading...");
-        $("div.modal-body").hide();
-        $("#imgPoster").html("");
-
-        if (id in movieCache) {
-
-            consoleData("Data available in cache  for " + movieCache[id].name);
-            showMovieDetailedDialog(movieCache[id]);
-
-        }else{
-
-
-            //Not available in cache so download
-            $.ajax({
-                url: imdbServletUrl,
-                type: "get",
-                data: {imdbId: id},
-                success: function (data) {
-
-                    movieCache[id] = data;
-
-                    consoleData("Movie loaded " + data.name);
-
-                    showMovieDetailedDialog(data);
-
-
-                },
-                error: function (xhr) {
-                    consoleData("Error while " + xhr.data);
-                }
-            });
-        }
-
-        function showMovieDetailedDialog(data) {
-            var img = $('<img  />').load(function () {
-                $("#imgPoster").html("");
-                $("#imgPoster").append(img);
-            }).error(function () {
-                consoleData("Failed to load image");
-            }).attr('src', data.poster_url);
-
-            $("b#bRating").text(data.rating);
-            $("b#bGender").text(data.gender);
-            $("b#bPlot").text(data.plot);
-
-            $("h4.modal-title").text(data.name);
-            $("div.modal-body").slideDown(500);
-        }
-
-    });
-
 
     $("#bRankix").click(function () {
+
+        $("#bSort").hide();
+
+        var movieCache = new Array();
+        //TODO: X
+        //var movieRatingCache = new Array();
 
         postProgress(20, "Contacting TREE Manager...");
 
@@ -155,7 +143,7 @@ $(document).ready(function () {
         var treeData = $("#taTree").val();
 
         function showError(errorReason) {
-            $("div#results").prepend('<p id="0" class="text-danger"><strong>Error: </strong>' + errorReason + '</p>');
+            $("div#results").prepend('<p r="0" class="text-danger"><strong>Error: </strong>' + errorReason + '</p>\n');
         }
 
 
@@ -169,7 +157,7 @@ $(document).ready(function () {
             $.post(treeUrl, {tree: treeData})
                 .done(function (data) {
 
-                    postProgress(100, "TREE Managed!")
+                    postProgress(100, "Tree scan completed, please wait...")
 
 
                     if (data.error) {
@@ -225,7 +213,7 @@ $(document).ready(function () {
 
 
                             function addResult(fontSize, movieName, imdbId, imdbRating) {
-                                $("div#results").prepend('<p data-toggle="modal" data-target="#myModal" class="movieRow" id="' + imdbId + '" style="font-size:' + fontSize + 'px;">' + movieName + '<small class="text-muted"> has ' + imdbRating + '</small></p>');
+                                $("div#results").prepend('<p r="' + imdbRating + '" data-toggle="modal" data-target="#myModal" class="movieRow" id="' + imdbId + '" style="font-size:' + fontSize + 'px;">' + movieName + '<small class="text-muted"> has ' + imdbRating + '</small></p>\n');
                             }
 
                             if (!data.error) {
@@ -236,15 +224,18 @@ $(document).ready(function () {
                                 var myRegexp = /^IMDB rating is null for (.+)$/;
                                 var match = myRegexp.exec(data.data);
                                 movieName = match[1];
-                                $("div#results").prepend('<p id="0" class="text-danger"><strong>' + movieName + '</strong> has no rating</p>');
+                                $("div#results").prepend('<p r="0" class="text-danger"><strong>' + movieName + '</strong> has no rating</p>\n');
                             }
 
                             var scoreCount = $("#results p").length;
 
                             var perc = (scoreCount / movieNameAndId.length ) * 100;
-                            postProgress(perc, parseInt(perc) + "% - Last rankixed : " + movieName);
+                            postProgress(perc, parseInt(perc) + "%");
 
                             if (perc == 100) {
+
+                                $("#bSort").fadeIn(1000);
+
                                 var finishTime = new Date().getTime();
                                 consoleData("Took " + Math.round(((finishTime - startTime) / 1000)) + "s");
                                 consoleData("---------------------------------");
@@ -266,16 +257,20 @@ $(document).ready(function () {
 
                         data.results.forEach(function (obj) {
 
-                            if(obj.id in movieRatingCache){
+                            movieNameAndId[obj.id] = obj.name;
+                            webSocket.send(JSON.stringify(obj));
 
-                                consoleData("Downloading from cache : "+obj.name);
-                                handleData(movieRatingCache[obj.id]);
+                            /*
+                             //Cacheing concept must be improved
+                             if (obj.id in movieRatingCache) {
 
-                            }else{
+                             consoleData("Downloading from cache : " + obj.name);
+                             handleData(movieRatingCache[obj.id]);
 
-                                movieNameAndId[obj.id] = obj.name;
-                                webSocket.send(JSON.stringify(obj));
-                            }
+                             } else {
+
+
+                             }*/
 
                         });
 
@@ -285,7 +280,7 @@ $(document).ready(function () {
                             var data = JSON.parse(evt.data);
 
                             //Adding to cache
-                            movieRatingCache[data.id] = data;
+                            //movieRatingCache[data.id] = data;
 
 
                             handleData(data);
@@ -295,11 +290,11 @@ $(document).ready(function () {
                         webSocket.onclose = function (evt) {
                             consoleData("Socket closed");
                             freeApp();
-                            $("div#results").prepend("<p id='0' class='text-info'>SOCKET Closed</p>");
+                            $("div#results").prepend("<p r='0' class='text-info'>SOCKET Closed</p>\n");
                         };
                         webSocket.onerror = function (evt) {
                             freeApp();
-                            $("div#results").prepend("<p id='0' class='text-danger'>" + evt.data + "</p>");
+                            $("div#results").prepend("<p r='0' class='text-danger'>" + evt.data + "</p>\n");
                         };
                     }
                 })
@@ -309,6 +304,62 @@ $(document).ready(function () {
                     showError("Network error occured, Please check your connection! ");
                 })
 
+        }
+
+    });
+
+    $('div#results').on('click', 'p.movieRow', function () {
+        var id = $(this).attr('id');
+
+        //Set loading
+        $("h4.modal-title").html("Loading...");
+        $("div.modal-body").hide();
+        $("#imgPoster").html("");
+
+        if (id in movieCache) {
+
+            consoleData("Data available in cache  for " + movieCache[id].name);
+            showMovieDetailedDialog(movieCache[id]);
+
+        } else {
+
+
+            //Not available in cache so download
+            $.ajax({
+                url: imdbServletUrl,
+                type: "get",
+                data: {imdbId: id},
+                success: function (data) {
+
+                    movieCache[id] = data;
+
+                    consoleData("Movie loaded " + data.name);
+
+                    showMovieDetailedDialog(data);
+
+
+                },
+                error: function (xhr) {
+                    $("#bDismissDialog").click();
+                    consoleData("Error while " + xhr.data);
+                }
+            });
+        }
+
+        function showMovieDetailedDialog(data) {
+            var img = $('<img  />').load(function () {
+                $("#imgPoster").html("");
+                $("#imgPoster").append(img);
+            }).error(function () {
+                consoleData("Failed to load image");
+            }).attr('src', data.poster_url);
+
+            $("b#bRating").text(data.rating);
+            $("b#bGender").text(data.gender);
+            $("p#pPlot").text(data.plot);
+
+            $("h4.modal-title").text(data.name);
+            $("div.modal-body").slideDown(500);
         }
 
     });

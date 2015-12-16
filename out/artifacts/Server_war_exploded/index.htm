@@ -13,8 +13,7 @@
 
 <body>
 
-<div class="container" id="console">
-
+<div id="console">
 
     <div id="header">
         <h1> Rankix</h1>
@@ -28,7 +27,7 @@
                 ></textarea> <br>
 
         <button id="bRankix" class="btn btn-primary"> Rankix!</button>
-
+        <button id="bSort" class="btn btn-primary"> Sort!</button>
         <br><br><br>
 
         <div id="divProgress" class="progress" style="display:none;">
@@ -70,13 +69,16 @@
 
                         <p>Gender:<b id="bGender"> </b></p>
 
-                        <p>Plot:<b id="bPlot"> </b></p>
+                        <blockquote>
+                            <p id="pPlot"></p>
+                            <footer>Plot</footer>
+                        </blockquote>
                     </div>
 
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="bDismissDialog" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
 
             </div>
