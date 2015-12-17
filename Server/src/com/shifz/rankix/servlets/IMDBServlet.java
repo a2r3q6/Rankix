@@ -1,5 +1,6 @@
 package com.shifz.rankix.servlets;
 
+import com.shifz.rankix.database.Connection;
 import com.shifz.rankix.database.tables.Movies;
 import com.shifz.rankix.models.Movie;
 import com.shifz.rankix.utils.IMDBDotComHelper;
@@ -28,6 +29,7 @@ public class IMDBServlet extends BaseServlet {
     private static final String KEY_PLOT = "plot";
     private static final String KEY_POSTER_URL = "poster_url";
     private static final String POSTER_URL_FORMAT = "http://shifar-shifz.rhcloud.com/Rankix/posterServlet?imdbId=%s";
+    private static final String DEBUG_POSTER_URL_FORMAT = "http://localhost:8080/posterServlet?imdbId=%s";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -152,7 +154,7 @@ public class IMDBServlet extends BaseServlet {
             jMovie.put(KEY_GENDER, movie.getGender());
             jMovie.put(KEY_RATING, movie.getRating());
             jMovie.put(KEY_PLOT, movie.getPlot());
-            jMovie.put(KEY_POSTER_URL, String.format(POSTER_URL_FORMAT, movie.getImdbId()));
+            jMovie.put(KEY_POSTER_URL, String.format(Connection.debugMode ? DEBUG_POSTER_URL_FORMAT : POSTER_URL_FORMAT, movie.getImdbId()));
 
             System.out.println("Showing movie : " + movie);
         } catch (JSONException e) {

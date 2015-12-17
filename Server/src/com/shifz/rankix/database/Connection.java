@@ -1,5 +1,9 @@
 package com.shifz.rankix.database;
 
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+
+import javax.servlet.http.HttpServlet;
+import javax.sql.DataSource;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -8,7 +12,7 @@ import java.sql.SQLException;
  */
 public class Connection {
 
-    private static final boolean debugMode = false;
+    public static final boolean debugMode = false;
 
     //Local credentials
     private static final String LC_HOST = "192.168.0.106";
@@ -33,20 +37,27 @@ public class Connection {
 
     public static java.sql.Connection getConnection() {
 
-        try {
+        /*  try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }
+        }*/
 
         try {
-            return DriverManager.getConnection(SQL_CONNECTION_URL,
-                    debugMode ? LC_USERNAME : RM_USERNAME,
-                    debugMode ? LC_PASSWORD : RM_PASSWORD
-            );
+            return getDataSource().getConnection();
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private static DataSource getDataSource() {
+        MysqlDataSource mysqlDS = null;
+        mysqlDS = new MysqlDataSource();
+        mysqlDS.setURL(SQL_CONNECTION_URL);
+        mysqlDS.setUser(debugMode ? LC_USERNAME : RM_USERNAME);
+        mysqlDS.setPassword(debugMode ? LC_PASSWORD : RM_PASSWORD);
+        return mysqlDS;
+
     }
 }

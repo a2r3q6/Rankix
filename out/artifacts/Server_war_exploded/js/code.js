@@ -6,7 +6,6 @@ $(document).ready(function () {
     //var movieRatingCache = new Array();
 
     var isDebugMode = false;
-
     var webSocketAddress, imdbServletUrl, treeUrl, sortUrl;
 
     if (isDebugMode) {
@@ -57,7 +56,7 @@ $(document).ready(function () {
 
         $.ajax({
             url: sortUrl,
-            type: "get",
+            type: "post",
             data: {results: resultHtml},
             success: function (response) {
 
@@ -76,6 +75,7 @@ $(document).ready(function () {
             },
             error: function (xhr) {
                 hideProgress();
+                console.log(xhr);
                 consoleData("Error while " + xhr.data);
             }
         });
@@ -207,6 +207,7 @@ $(document).ready(function () {
                         $("div#results").html("");
 
                         function handleData(data) {
+
                             var movieName = movieNameAndId[data.id];
 
                             console.log(data);
@@ -221,7 +222,9 @@ $(document).ready(function () {
                                 addResult(fontSize, movieName, data.imdb_id, data.data);
                             } else {
 
-                                var myRegexp = /^IMDB rating is null for (.+)$/;
+                                console.log('Data is '+data.data);
+
+                                var myRegexp = /^Invalid movie name (.+)$/;
                                 var match = myRegexp.exec(data.data);
                                 movieName = match[1];
                                 $("div#results").prepend('<p r="0" class="text-danger"><strong>' + movieName + '</strong> has no rating</p>\n');

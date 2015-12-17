@@ -130,7 +130,7 @@ public final class Movies {
     }
 
     public boolean addBadMovie(String fileName) {
-        final String query = "INSERT INTO movies (file_name,created_at) VALUES (?,now());";
+        final String query = "INSERT INTO movies (file_name) VALUES (?);";
         try {
             final PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, fileName);
