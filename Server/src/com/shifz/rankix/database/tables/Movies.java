@@ -20,7 +20,7 @@ public final class Movies {
     public static final String COLUMN_RATING = "rating";
     private static final String COLUMN_GENDER = "gender";
     private static final String COLUMN_PLOT = "plot";
-    private static final String COLUMN_POSTER_URL = "poster_url";
+    public static final String COLUMN_POSTER_URL = "poster_url";
     private static final String COLUMN_AS_RATING_UPDATED_BEFORE = "rating_updated_before";
     private static java.sql.Connection connection = Connection.getConnection();
     ;
@@ -197,6 +197,30 @@ public final class Movies {
             e.printStackTrace();
         }
 
+        return null;
+    }
+
+    public String get(String whichColumn, String column, String columnValue) {
+
+        final String query = String.format("SELECT %s FROM movies WHERE %s = ?", whichColumn, column);
+        try {
+            final PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, columnValue);
+
+            final ResultSet rs = ps.executeQuery();
+            if (rs.first()) {
+
+                final String data = rs.getString(whichColumn);
+                rs.close();
+                ps.close();
+                return data;
+            }
+
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }

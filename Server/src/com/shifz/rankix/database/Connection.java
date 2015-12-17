@@ -8,7 +8,7 @@ import java.sql.SQLException;
  */
 public class Connection {
 
-    private static final boolean debugMode = true;
+    private static final boolean debugMode = false;
 
     //Local credentials
     private static final String LC_HOST = "192.168.0.106";
