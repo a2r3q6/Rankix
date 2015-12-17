@@ -12,13 +12,13 @@ import java.sql.SQLException;
  */
 public class Connection {
 
-    public static final boolean debugMode = false;
+    public static final boolean debugMode = true;
 
     //Local credentials
-    private static final String LC_HOST = "192.168.0.106";
+    private static final String LC_HOST = "localhost";
     private static final String LC_PORT = "3306";
     private static final String LC_USERNAME = "root";
-    private static final String LC_PASSWORD = "admin123";
+    private static final String LC_PASSWORD = "passroot";
 
 
     //Remote credentials
@@ -37,23 +37,16 @@ public class Connection {
 
     public static java.sql.Connection getConnection() {
 
-        /*  try {
-            Class.forName("com.mysql.jdbc.Driver");
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }*/
-
         try {
             return getDataSource().getConnection();
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
+            throw new IllegalArgumentException(e.getMessage());
         }
     }
 
     private static DataSource getDataSource() {
-        MysqlDataSource mysqlDS = null;
-        mysqlDS = new MysqlDataSource();
+        final MysqlDataSource mysqlDS = new MysqlDataSource();
         mysqlDS.setURL(SQL_CONNECTION_URL);
         mysqlDS.setUser(debugMode ? LC_USERNAME : RM_USERNAME);
         mysqlDS.setPassword(debugMode ? LC_PASSWORD : RM_PASSWORD);

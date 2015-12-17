@@ -22,15 +22,13 @@ public final class Movies {
     private static final String COLUMN_PLOT = "plot";
     public static final String COLUMN_POSTER_URL = "poster_url";
     private static final String COLUMN_AS_RATING_UPDATED_BEFORE = "rating_updated_before";
-    private static java.sql.Connection connection = Connection.getConnection();
-    ;
+
 
     private Movies() {
     }
 
     public static Movies getInstance() {
-        //TODO: Bug fix - Automatic connection loss.
-        connection = Connection.getConnection();
+        //TODO: Bug fix - Automatic Connection.getConnection() loss.
         return instance;
     }
 
@@ -46,7 +44,7 @@ public final class Movies {
 
         final String query = String.format("SELECT id,file_name,movie_name,imdb_id,rating,gender,plot,poster_url, IFNULL(DATEDIFF(now(),updated_at),-1) AS rating_updated_before FROM movies WHERE %s = ? LIMIT 1", column);
         try {
-            final PreparedStatement ps = connection.prepareStatement(query);
+            final PreparedStatement ps = Connection.getConnection().prepareStatement(query);
             ps.setString(1, value);
             final ResultSet rs = ps.executeQuery();
             if (rs.first()) {
@@ -89,7 +87,7 @@ public final class Movies {
     private boolean update(String id, String column, String value) {
         final String query = String.format("UPDATE movies SET %s = ? WHERE id = ?", column);
         try {
-            final PreparedStatement ps = connection.prepareStatement(query);
+            final PreparedStatement ps = Connection.getConnection().prepareStatement(query);
             ps.setString(1, value);
             ps.setString(2, id);
             final boolean isUpdated = ps.executeUpdate() == 1;
@@ -108,7 +106,8 @@ public final class Movies {
     public boolean add(Movie movie) {
         final String query = "INSERT INTO movies (movie_name,file_name,imdb_id,gender,rating,plot,poster_url) VALUES (?,?,?,?,?,?,?);";
         try {
-            final PreparedStatement ps = connection.prepareStatement(query);
+
+            final PreparedStatement ps = Connection.getConnection().prepareStatement(query);
 
             //Setting values
             ps.setString(1, movie.getMovieName());
@@ -132,7 +131,7 @@ public final class Movies {
     public boolean addBadMovie(String fileName) {
         final String query = "INSERT INTO movies (file_name) VALUES (?);";
         try {
-            final PreparedStatement ps = connection.prepareStatement(query);
+            final PreparedStatement ps = Connection.getConnection().prepareStatement(query);
             ps.setString(1, fileName);
             final boolean isAdded = ps.executeUpdate() == 1;
             ps.close();
@@ -149,7 +148,7 @@ public final class Movies {
 
         final String query = "UPDATE movies SET movie_name = ? , gender= ? ,rating= ? , plot= ? ,poster_url= ? WHERE id = ?";
         try {
-            final PreparedStatement ps = connection.prepareStatement(query);
+            final PreparedStatement ps = Connection.getConnection().prepareStatement(query);
 
             //Setting params
             ps.setString(1, updatedMovie.getMovieName());
@@ -173,7 +172,7 @@ public final class Movies {
     public Movie getBasicMovie(String column, String value) {
         final String query = String.format("SELECT id,imdb_id,rating, IFNULL(DATEDIFF(now(),updated_at),-1) AS rating_updated_before FROM movies WHERE %s = ? LIMIT 1", column);
         try {
-            final PreparedStatement ps = connection.prepareStatement(query);
+            final PreparedStatement ps = Connection.getConnection().prepareStatement(query);
             ps.setString(1, value);
             final ResultSet rs = ps.executeQuery();
             if (rs.first()) {
@@ -204,7 +203,7 @@ public final class Movies {
 
         final String query = String.format("SELECT %s FROM movies WHERE %s = ?", whichColumn, column);
         try {
-            final PreparedStatement ps = connection.prepareStatement(query);
+            final PreparedStatement ps = Connection.getConnection().prepareStatement(query);
             ps.setString(1, columnValue);
 
             final ResultSet rs = ps.executeQuery();

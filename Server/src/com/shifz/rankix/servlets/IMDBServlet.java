@@ -28,8 +28,8 @@ public class IMDBServlet extends BaseServlet {
     private static final String KEY_RATING = "rating";
     private static final String KEY_PLOT = "plot";
     private static final String KEY_POSTER_URL = "poster_url";
-    private static final String POSTER_URL_FORMAT = "http://shifar-shifz.rhcloud.com/Rankix/posterServlet?imdbId=%s";
-    private static final String DEBUG_POSTER_URL_FORMAT = "http://localhost:8080/posterServlet?imdbId=%s";
+    private static final String POSTER_URL_FORMAT = "http://shifar-shifz.rhcloud.com/Rankix/getPoster/%s.jpg";
+    private static final String DEBUG_POSTER_URL_FORMAT = "http://localhost:8080/getPoster/%s.jpg";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

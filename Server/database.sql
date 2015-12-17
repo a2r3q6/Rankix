@@ -20,6 +20,15 @@ PRIMARY KEY(id),
 FOREIGN KEY (movie_id) REFERENCES movies(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+CREATE TABLE shared_data(
+id INT NOT NULL AUTO_INCREMENT,
+data_key VARCHAR(10) NOT NULL,
+data TEXT NOT NULL,
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
+PRIMARY KEY(id),
+UNIQUE (urlId)
+);
+
 /* Change the delimiter so we can use ";" within the CREATE TRIGGER */
 DELIMITER $$
 

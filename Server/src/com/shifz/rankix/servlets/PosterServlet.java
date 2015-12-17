@@ -13,23 +13,26 @@ import java.net.URL;
 /**
  * Created by shifar on 17/12/15.
  */
-@WebServlet(urlPatterns = {"/posterServlet"})
+@WebServlet(urlPatterns = {"/getPoster/*"})
 public class PosterServlet extends BaseServlet {
 
-    protected static final String KEY_IMDB_ID = "imdbId";
-    protected static final String REGEX_IMDBID = "tt\\d{7}";
+    protected static final String REGEX_IMDBID = "/tt\\d{7}.jpg";
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse response) throws ServletException, IOException {
 
-        response.setContentType("image/jpeg");
+        String imdbId = req.getPathInfo();
 
-        final String imdbId = req.getParameter(KEY_IMDB_ID);
-
-        if (imdbId == null || imdbId.trim().isEmpty() || !imdbId.matches(REGEX_IMDBID)) {
+        if (imdbId == null || !imdbId.matches(REGEX_IMDBID)) {
             System.out.println("Wrong imdb format");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } else {
+
+            response.setContentType("image/jpeg");
+
+            imdbId = imdbId.substring(1,10);
+
+            System.out.println("Real imdbId : "+imdbId);
 
             final Movies moviesTable = Movies.getInstance();
             final String posterUrl = moviesTable.get(Movies.COLUMN_POSTER_URL, Movies.COLUMN_IMDB_ID, imdbId);
