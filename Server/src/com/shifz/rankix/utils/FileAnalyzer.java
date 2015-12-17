@@ -89,7 +89,7 @@ public class FileAnalyzer {
         final Matcher rankixedMatcher = rankixedPattern.matcher(fileName);
         //If old data exist - removing old data
         if (rankixedMatcher.find()) {
-            fileName = rankixedMatcher.replaceFirst("$1$2");
+            fileName = rankixedMatcher.replaceFirst("$1");
         }
         return fileName;
     }

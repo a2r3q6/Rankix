@@ -79,7 +79,7 @@ public class TreeServlet extends BaseServlet {
 
                         if (FileAnalyzer.isRankixed(videoFileName)) {
                             rankixedFileCount++;
-                            continue;
+                            videoFileName = FileAnalyzer.getClearedRandixName(videoFileName);
                         }
 
                         videoFileName = FileAnalyzer.getMovieNameFromFileName(videoFileName);

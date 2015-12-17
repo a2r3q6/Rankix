@@ -14,7 +14,7 @@ public class FileAnalyzer {
     public static boolean isVideoFile(final File file) {
         final String fileName = file.getName();
         if (file.isFile()) {
-            final String fileExt = fileName.substring(fileName.lastIndexOf('.')+1, fileName.length());
+            final String fileExt = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
             for (final String okExt : videoExts) {
                 if (okExt.equals(fileExt)) {
                     return true;
@@ -58,18 +58,18 @@ public class FileAnalyzer {
         String fileName = file.getName();
         fileName = getClearedRandixName(fileName);
 
-        if(file.isFile()&& fileName.contains(".")){
-            fileName = fileName.substring(0,fileName.lastIndexOf('.'));
+        if (file.isFile() && fileName.contains(".")) {
+            fileName = fileName.substring(0, fileName.lastIndexOf('.'));
         }
 
         fileName = fileName.replaceAll("\\W+", " ");
         fileName = fileName.toLowerCase();
 
-        if(junkWordRegEx==null){
+        if (junkWordRegEx == null) {
             junkWordRegEx = getJunkWordRegEx();
         }
 
-        fileName = fileName.replaceAll(junkWordRegEx,"");
+        fileName = fileName.replaceAll(junkWordRegEx, "");
 
         final Matcher movieNameMatcher = moviePattern.matcher(fileName);
 
@@ -80,7 +80,7 @@ public class FileAnalyzer {
             fileName = movieName + year;
         }
 
-        fileName = fileName.replaceAll("(\\s{2,}|\\s+$|^\\s)","");
+        fileName = fileName.replaceAll("(\\s{2,}|\\s+$|^\\s)", "");
 
         return fileName;
     }
@@ -102,10 +102,10 @@ public class FileAnalyzer {
 
     public static String getJunkWordRegEx() {
         StringBuilder sb = new StringBuilder("(");
-        for(int i=0;i<JUNK_WORDS.length;i++){
-            sb.append(JUNK_WORDS[i]+"|");
+        for (String JUNK_WORD : JUNK_WORDS) {
+            sb.append(JUNK_WORD).append("|");
         }
-        sb = sb.deleteCharAt(sb.length()-1);
+        sb = sb.deleteCharAt(sb.length() - 1);
         sb.append(")");
         return sb.toString();
     }
