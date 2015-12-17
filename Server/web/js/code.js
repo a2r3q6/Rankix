@@ -5,7 +5,7 @@ $(document).ready(function () {
     var movieCache = new Array();
     //var movieRatingCache = new Array();
 
-    var isDebugMode = false;
+    var isDebugMode = true;
 
     var webSocketAddress, imdbServletUrl, treeUrl, sortUrl;
 

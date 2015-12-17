@@ -63,6 +63,13 @@ public class IMDBServlet extends BaseServlet {
                         sb.append(line.trim());
                     }
 
+                    /*System.out.println("---------------------------------------");
+                    System.out.println(sb);
+                    if (true) {
+                        return;
+                    }
+                    System.out.println("---------------------------------------");
+*/
                     br.close();
 
                     final IMDBDotComHelper imdbHelper = new IMDBDotComHelper(imdbId, sb.toString());

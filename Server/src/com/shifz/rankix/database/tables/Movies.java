@@ -27,14 +27,10 @@ public final class Movies {
 
     private Movies() {
     }
+
     public static Movies getInstance() {
-        try {
-            if (connection == null || connection.isClosed()) {
-                connection = Connection.getConnection();
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        //TODO: Bug fix - Automatic connection loss.
+        connection = Connection.getConnection();
         return instance;
     }
 

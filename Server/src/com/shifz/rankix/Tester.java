@@ -21,54 +21,12 @@ import java.util.regex.Pattern;
  */
 public class Tester {
 
-    private static final String KEY_RESULT = "result";
-    private static final Pattern RATING_PATTERN = Pattern.compile("^(?<para><p r=\"(?<rating>\\d+(?:\\.\\d)?)\".+<\\/p>)$", Pattern.MULTILINE);
-    private static final String KEY_RATING = "rating";
-    private static final String KEY_PARA = "para";
 
 
     public static void main(String[] args) throws IOException {
 
 
-        //Read data
-        final BufferedReader br = new BufferedReader(new FileReader("sort_test_data"));
-        final StringBuilder treeStringBuilder = new StringBuilder();
-        String line;
-        while ((line = br.readLine()) != null) {
-            treeStringBuilder.append(line).append("\n");
-        }
 
-        br.close();
-
-        final String resultHtml = treeStringBuilder.toString();
-
-        final Matcher ratingMatcher = RATING_PATTERN.matcher(resultHtml);
-        final String[] nodes = resultHtml.split("\n");
-
-        final List<Result> resultList = new ArrayList<>(nodes.length);
-
-        for (int i = 0; i < nodes.length; i++) {
-            if (ratingMatcher.find()) {
-                final float rating = Float.parseFloat(ratingMatcher.group(KEY_RATING));
-                final String para = ratingMatcher.group(KEY_PARA);
-                final Result result = new Result(rating, para);
-                resultList.add(result);
-            }
-        }
-
-
-        //Sorting by rating
-        Collections.sort(resultList, new Comparator<Result>() {
-            @Override
-            public int compare(Result o1, Result o2) {
-                return o2.getRating().compareTo(o1.getRating());
-            }
-        });
-
-
-        for (final Result m : resultList) {
-            System.out.println(m);
-        }
 
 
 
@@ -95,26 +53,5 @@ public class Tester {
 
     }
 
-    public static class Result {
-        private final Float rating;
-        private final String html;
-
-        public Result(Float rating, String html) {
-            this.rating = rating;
-            this.html = html;
-        }
-
-        @Override
-        public String toString() {
-            return "Result{" +
-                    "rating=" + rating +
-                    ", html='" + html + '\'' +
-                    '}';
-        }
-
-        public Float getRating() {
-            return rating;
-        }
-    }
 
 }
