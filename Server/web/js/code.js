@@ -1,23 +1,28 @@
 $(document).ready(function () {
 
     $("#bSort").hide();
+    $("#bShare").hide();
 
     var movieCache = new Array();
     //var movieRatingCache = new Array();
 
-    var isDebugMode = true;
-    var webSocketAddress, imdbServletUrl, treeUrl, sortUrl;
+    var isDebugMode = false;
+    var webSocketAddress, imdbServletUrl, treeUrl, sortUrl, shareServletUrl,sharedDataUrl;
 
     if (isDebugMode) {
         webSocketAddress = "ws://localhost:8080/RankixSocket";
         imdbServletUrl = "/imdbServlet";
         treeUrl = "/Tree";
         sortUrl = "/sortServlet";
+        shareServletUrl = "/shareServlet";
+        sharedDataUrl = "/shared/"
     } else {
         webSocketAddress = "ws://shifar-shifz.rhcloud.com:8000/Rankix/RankixSocket";
         imdbServletUrl = "/Rankix/imdbServlet";
         treeUrl = "/Rankix/Tree";
         sortUrl = "/Rankix/sortServlet";
+        shareServletUrl = "/Rankix/shareServlet";
+        sharedDataUrl = "/Rankix/shared/"
     }
 
     var isWorking = true;
@@ -25,6 +30,13 @@ $(document).ready(function () {
     function showProgressBar() {
         $("#divProgress").css({'display': 'block'});
         $("#divProgress").slideDown(2000);
+    }
+
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
 
     function hideProgress() {
@@ -48,6 +60,54 @@ $(document).ready(function () {
         consoleData("CONNECTED TO SOCKET :)");
     };
 
+    //Checking if the intent is to access shared data
+    var params = window.location.search;
+    var key = getParameterByName('key');
+    if(key.length==10){
+        //Valid key
+        $.ajax({
+            url : sharedDataUrl + key,
+            type : "get",
+            success: function(response){
+                if(response.error){
+                    alert(response.message);
+                }else{
+                    $("div#results").html(response.data);
+                }
+            },
+            error: function(xhr){
+                console.log(xhr);
+                consoleData("Error "+xhr.response);
+            }
+        });
+    }
+
+
+    $("#bShare").click(function () {
+
+        var shareData = $("#results").html();
+        $.ajax({
+            url: shareServletUrl,
+            type: "post",
+            data: {share_data: shareData},
+            success: function (response) {
+
+                console.log(response);
+
+                if (response.error) {
+                    consoleData("Error :"+response.message);
+                } else {
+                    $("#bShare").hide();
+                    window.prompt("Shared! Press Control+C to copy the link" , response.shared_data_url);
+                    consoleData(response.shared_data_url);
+                }
+            },
+            error: function (xhr) {
+                console.log(xhr);
+            }
+        });
+
+    });
 
     $("#bSort").click(function () {
 
@@ -60,7 +120,7 @@ $(document).ready(function () {
             data: {results: resultHtml},
             success: function (response) {
 
-                postProgress(100,"Finished");
+                postProgress(100, "Finished");
                 hideProgress();
 
                 console.log(response);
@@ -121,6 +181,7 @@ $(document).ready(function () {
     $("#bRankix").click(function () {
 
         $("#bSort").hide();
+        $("#bShare").hide();
 
         var movieCache = new Array();
         //TODO: X
@@ -222,7 +283,7 @@ $(document).ready(function () {
                                 addResult(fontSize, movieName, data.imdb_id, data.data);
                             } else {
 
-                                console.log('Data is '+data.data);
+                                console.log('Data is ' + data.data);
 
                                 var myRegexp = /^Invalid movie name (.+)$/;
                                 var match = myRegexp.exec(data.data);
@@ -238,6 +299,7 @@ $(document).ready(function () {
                             if (perc == 100) {
 
                                 $("#bSort").fadeIn(1000);
+                                $("#bShare").fadeIn(1000);
 
                                 var finishTime = new Date().getTime();
                                 consoleData("Took " + Math.round(((finishTime - startTime) / 1000)) + "s");
