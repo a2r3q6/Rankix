@@ -101,6 +101,26 @@ $(document).ready(function () {
 
             $.ajax({
                 url: shareServletUrl,
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            //Do something with upload progress here
+                            postProgress(percentComplete, "Saving result...");
+                        }
+                    }, false);
+
+                    xhr.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            //Do something with download progress
+                            postProgress(percentComplete, "Downloading shared link...");
+                        }
+                    }, false);
+
+                    return xhr;
+                },
                 type: "post",
                 data: {share_data: shareData},
                 success: function (response) {
@@ -120,7 +140,7 @@ $(document).ready(function () {
                 }
             });
 
-        }else{
+        } else {
             window.prompt("Press Control + C to copy the shareable link.", sharedLink);
         }
 
@@ -131,10 +151,30 @@ $(document).ready(function () {
         sharedLink = null;
 
         var resultHtml = $("#results").html();
-        postProgress(30, "Sorting movies...");
 
         $.ajax({
+
             url: sortUrl,
+            xhr: function () {
+                var xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress", function (evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = evt.loaded / evt.total;
+                        //Do something with upload progress here
+                        postProgress(percentComplete, "Sorting (UP)...");
+                    }
+                }, false);
+
+                xhr.addEventListener("progress", function (evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = evt.loaded / evt.total;
+                        //Do something with download progress
+                        postProgress(percentComplete, "Sorting (DOWN)...");
+                    }
+                }, false);
+
+                return xhr;
+            },
             type: "post",
             data: {results: resultHtml},
             success: function (response) {
@@ -224,7 +264,6 @@ $(document).ready(function () {
         }
 
 
-
         var treeData = $("#taTree").val();
 
         function showError(errorReason) {
@@ -239,8 +278,32 @@ $(document).ready(function () {
             showProgressBar();
 
             freezeApp();
-            $.post(treeUrl, {tree: treeData})
-                .done(function (data) {
+
+            $.ajax({
+                url: treeUrl,
+                xhr: function () {
+                    var xhr = new window.XMLHttpRequest();
+                    xhr.upload.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            //Do something with upload progress here
+                            postProgress(percentComplete, "Scanning tree ...");
+                        }
+                    }, false);
+
+                    xhr.addEventListener("progress", function (evt) {
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            //Do something with download progress
+                            postProgress(percentComplete, "Downloading scan result...");
+                        }
+                    }, false);
+
+                    return xhr;
+                },
+                type: "post",
+                data: {tree: treeData},
+                success: function (data) {
 
                     postProgress(100, "Tree scan completed, please wait...")
 
@@ -386,12 +449,13 @@ $(document).ready(function () {
                             $("div#results").prepend("<p r='0' class='text-danger'>" + evt.data + "</p>\n");
                         };
                     }
-                })
-                .fail(function () {
+                },
+                error: function () {
                     hideProgress();
                     freeApp();
                     showError("Network error occured, Please check your connection! ");
-                })
+                }
+            });
 
         }
 
@@ -430,7 +494,7 @@ $(document).ready(function () {
                 },
                 error: function (xhr) {
                     $("#bDismissDialog").click();
-                    consoleData("Error while " + xhr.data);
+                    consoleData("Error occurred!");
                 }
             });
         }
