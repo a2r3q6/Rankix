@@ -14,14 +14,14 @@ import java.sql.SQLException;
  */
 public class Connection {
 
-    public static final boolean debugMode = false;
+    public static final boolean debugMode = true;
 
     public static java.sql.Connection getConnection() {
 
         try {
             Context initContext = new InitialContext();
             Context envContext = (Context) initContext.lookup("java:/comp/env");
-            DataSource ds = (DataSource) envContext.lookup("jdbc/MySQLDS");
+            DataSource ds = (DataSource) envContext.lookup(debugMode ? "jdbc/rankix" :"jdbc/MySQLDS");
             return ds.getConnection();
         } catch (NamingException | SQLException e) {
             e.printStackTrace();

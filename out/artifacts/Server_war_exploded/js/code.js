@@ -200,11 +200,6 @@ $(document).ready(function () {
 
     $("#bRankix").click(function () {
 
-        if (isWorking) {
-            consoleData("Work in progress...")
-            return;
-        }
-
         sharedLink = null;
 
         $("#bSort").hide();
@@ -223,7 +218,10 @@ $(document).ready(function () {
             isWorking = false;
         }
 
-
+        if (isWorking) {
+            consoleData("Work in progress...")
+            return;
+        }
 
         var treeData = $("#taTree").val();
 
