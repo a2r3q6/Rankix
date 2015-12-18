@@ -37,7 +37,7 @@ public class SortServlet extends BaseServlet {
         final String resultHtml = req.getParameter(KEY_RESULTS);
 
         if (resultHtml == null || resultHtml.trim().isEmpty()) {
-            //System.out.println("Damaged result");
+            System.out.println("Damaged result");
             out.print(getJSONError("Result html is damaged"));
         } else {
 

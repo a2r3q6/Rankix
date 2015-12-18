@@ -87,7 +87,7 @@ public class MovieBuff {
         } else {
 
             //Google hasn't the IMDB rating. So checking if google has the IMDBUrl.
-            //System.out.println("GOOGLE failed to find rating for the movie " + this.movie);
+            System.out.println("GOOGLE failed to find rating for the movie " + this.movie);
 
             //Finding imdb url from google response.
             final Matcher imdbUrlMatcher = IMDB_URL_PATTERN.matcher(googleData);
@@ -95,7 +95,7 @@ public class MovieBuff {
             if (imdbUrlMatcher.find()) {
 
                 //Yes, google has the imdb url
-                //System.out.println("but we've IMDB url, so downloading imdb.com data");
+                System.out.println("but we've IMDB url, so downloading imdb.com data");
 
                 //Converting url to http instead of www
                 final String imdbUrlString = String.format("http://%s", imdbUrlMatcher.group(KEY_IMDB_URL));
@@ -121,12 +121,12 @@ public class MovieBuff {
                         return this.movie;
                     }
 
-                    //System.out.println("IMDB.com failed to find rating for " + this.movie);
+                    System.out.println("IMDB.com failed to find rating for " + this.movie);
                 }
             }
         }
 
-        //System.out.println("Failed to find rating for " + this.movie);
+        System.out.println("Failed to find rating for " + this.movie);
 
         return null;
     }
@@ -140,10 +140,13 @@ public class MovieBuff {
     private static String getNetworkResponse(final String urlString, final boolean isFakeUserAgent) {
 
         try {
+
+
+            System.out.println("Accessing : " + urlString);
+
             //Creating url object
             URL urlOb = new URL(urlString);
 
-            //System.out.println("Url: " + urlString);
 
             HttpURLConnection con = (HttpURLConnection) urlOb.openConnection();
 

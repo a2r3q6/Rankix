@@ -41,10 +41,10 @@ public final class IMDBDotComHelper {
     }
 
     private static void debug(String[] exp1) {
-        //System.out.println("Length: " + exp1.length);
+        System.out.println("Length: " + exp1.length);
         for (final String exp : exp1) {
-            //System.out.println(exp);
-            //System.out.println();
+            System.out.println(exp);
+            System.out.println();
         }
     }
 

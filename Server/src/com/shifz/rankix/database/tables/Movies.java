@@ -42,7 +42,7 @@ public final class Movies {
      */
     public Movie getMovie(String column, String value) {
 
-        final String query = String.format("SELECT id,file_name,movie_name,imdb_id,rating,gender,plot,poster_url, IFNULL(DATEDIFF(now(),updated_at),-1) AS rating_updated_before FROM movies WHERE %s = ? LIMIT 1", column);
+        final String query = String.format("SELECT id,file_name,movie_name,imdb_id,rating,gender,plot,poster_url, IFNULL(DATEDIFF(now(),updated_at),-1) AS rating_updated_before FROM movies WHERE %s = ? ORDER BY id DESC LIMIT 1 ", column);
         final java.sql.Connection con = Connection.getConnection();
         Movie movie = null;
         try {
@@ -175,7 +175,7 @@ public final class Movies {
 
     public boolean update(Movie updatedMovie) {
 
-        //System.out.println("Updating movie by adding more details " + updatedMovie);
+        System.out.println("Updating movie by adding more details " + updatedMovie);
 
         final String query = "UPDATE movies SET movie_name = ? , gender= ? ,rating= ? , plot= ? ,poster_url= ? WHERE id = ?";
         final java.sql.Connection con = Connection.getConnection();

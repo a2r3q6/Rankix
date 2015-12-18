@@ -24,7 +24,7 @@ public class PosterServlet extends BaseServlet {
         String imdbId = req.getPathInfo();
 
         if (imdbId == null || !imdbId.matches(REGEX_IMDBID)) {
-            //System.out.println("Wrong imdb format");
+            System.out.println("Wrong imdb format");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } else {
 
@@ -32,13 +32,13 @@ public class PosterServlet extends BaseServlet {
 
             imdbId = imdbId.substring(1,10);
 
-            //System.out.println("Real imdbId : "+imdbId);
+            System.out.println("Real imdbId : "+imdbId);
 
             final Movies moviesTable = Movies.getInstance();
             final String posterUrl = moviesTable.get(Movies.COLUMN_POSTER_URL, Movies.COLUMN_IMDB_ID, imdbId);
 
             if (posterUrl == null) {
-                //System.out.println("PosterUrl not found in db");
+                System.out.println("PosterUrl not found in db");
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 return;
             }
