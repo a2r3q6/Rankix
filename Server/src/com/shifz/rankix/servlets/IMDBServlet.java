@@ -38,7 +38,7 @@ public class IMDBServlet extends BaseServlet {
         final PrintWriter out = resp.getWriter();
 
         final String imdbId = req.getParameter(KEY_IMDB_ID);
-        System.out.println("imdbId : " + imdbId);
+        //System.out.println("imdbId : " + imdbId);
         if (imdbId != null && imdbId.matches(REGEX_IMDBID)) {
 
             //Checking db
@@ -46,11 +46,11 @@ public class IMDBServlet extends BaseServlet {
             Movie dbMovie = movies.getMovie(Movies.COLUMN_IMDB_ID, imdbId);
 
             if (dbMovie != null && dbMovie.isValid()) {
-                System.out.println("Rating not expired, so showing from local");
+                //System.out.println("Rating not expired, so showing from local");
                 out.write(getJSONMovieString(dbMovie));
             } else {
 
-                System.out.println("Downloading movie data from...");
+                //System.out.println("Downloading movie data from...");
 
                 //Download new data
                 final URL imdbUrl = new URL(String.format(IMDB_URL_FORMAT, imdbId));
@@ -66,12 +66,12 @@ public class IMDBServlet extends BaseServlet {
                         sb.append(line.trim());
                     }
 
-                    /*System.out.println("---------------------------------------");
-                    System.out.println(sb);
+                    /*//System.out.println("---------------------------------------");
+                    //System.out.println(sb);
                     if (true) {
                         return;
                     }
-                    System.out.println("---------------------------------------");
+                    //System.out.println("---------------------------------------");
 */
                     br.close();
 
@@ -84,10 +84,10 @@ public class IMDBServlet extends BaseServlet {
 
                         if (dbMovie.hasMoreDetails()) {
 
-                            System.out.println("Movie has more details, so only updating the rating");
+                            //System.out.println("Movie has more details, so only updating the rating");
 
                             //Updating new rating...
-                            System.out.println("Updating db...");
+                            //System.out.println("Updating db...");
 
                             //Updating rating column only
                             final boolean isUpdated = movies.updateRating(dbMovie.getId(), dbMovie.getRating());
@@ -98,7 +98,7 @@ public class IMDBServlet extends BaseServlet {
 
                         } else {
 
-                            System.out.println("Movie hasn't more detail so updating more details");
+                            //System.out.println("Movie hasn't more detail so updating more details");
 
                             final Movie newMovie = imdbHelper.getMovie();
 
@@ -156,7 +156,7 @@ public class IMDBServlet extends BaseServlet {
             jMovie.put(KEY_PLOT, movie.getPlot());
             jMovie.put(KEY_POSTER_URL, String.format(Connection.debugMode ? DEBUG_POSTER_URL_FORMAT : POSTER_URL_FORMAT, movie.getImdbId()));
 
-            System.out.println("Showing movie : " + movie);
+            //System.out.println("Showing movie : " + movie);
         } catch (JSONException e) {
             e.printStackTrace();
         }

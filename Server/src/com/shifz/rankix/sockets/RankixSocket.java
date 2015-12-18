@@ -28,7 +28,7 @@ public class RankixSocket {
 
     @OnOpen
     public void onOpen() {
-        System.out.println("Connected to RankixSocket");
+        //System.out.println("Connected to RankixSocket");
         movies = Movies.getInstance();
     }
 
@@ -51,12 +51,12 @@ public class RankixSocket {
 
             if (dbMovie != null && dbMovie.hasValidRating()) {
 
-                System.out.println("Movie available in database " + name);
+                //System.out.println("Movie available in database " + name);
                 if (dbMovie.getRating() != null) {
-                    System.out.println("Valid movie and has rating");
+                    //System.out.println("Valid movie and has rating");
                     client.sendText(getJSONMovieData(id, dbMovie));
                 } else {
-                    System.out.println("The file name already tried and failed...");
+                    //System.out.println("The file name already tried and failed...");
                     client.sendText(BaseServlet.getJSONError("Invalid movie name " + name));
                 }
 
@@ -73,15 +73,37 @@ public class RankixSocket {
                         if (!isRatingUpdated) {
                             throw new Error("Failed to update rating...");
                         }
+
                     } else {
-                        //Adding new movie
-                        final boolean isMovieAdded = movies.add(newMovie);
-                        if (!isMovieAdded) {
-                            throw new Error("Failed to add new movie " + name);
+
+                        //Checking if there's any movie with the imdbId
+                        final boolean isMovieExistInDB = movies.get(Movies.COLUMN_FILE_NAME, Movies.COLUMN_IMDB_ID, newMovie.getImdbId()) != null;
+
+                        if (isMovieExistInDB) {
+
+                            //Updating rating
+                            final boolean isRatingUpdated = movies.update(
+                                    Movies.COLUMN_IMDB_ID,
+                                    newMovie.getImdbId(),
+                                    Movies.COLUMN_RATING,
+                                    newMovie.getRating()
+                            );
+
+                            if (!isRatingUpdated) {
+                                throw new Error("Failed to update rating (SPECIAL CASE)...");
+                            }
+
+                        } else {
+
+                            final boolean isMovieAdded = movies.add(newMovie);
+                            if (!isMovieAdded) {
+                                throw new Error("Failed to add new movie " + name);
+                            }
                         }
                     }
 
 
+                    //Showing result
                     client.sendText(getJSONMovieData(id, newMovie));
 
                 } else {
@@ -137,12 +159,12 @@ public class RankixSocket {
     @OnError
     public void onError(Throwable e) {
         e.printStackTrace();
-        System.out.println(e.getMessage());
+        //System.out.println(e.getMessage());
     }
 
     @OnClose
     public void onClose() {
-        System.out.println("RankixSocket closed");
+        //System.out.println("RankixSocket closed");
     }
 
 }

@@ -30,7 +30,7 @@ public class SharedDataServlet extends BaseServlet {
         } else {
 
             sharedDataKey = sharedDataKey.substring(1);
-            System.out.println("Original key = " + sharedDataKey);
+            //System.out.println("Original key = " + sharedDataKey);
             final SharedData sharedDataTable = SharedData.getInstance();
             final String sharedData = sharedDataTable.get(SharedData.COLUMN_DATA, SharedData.COLUMN_DATA_KEY, sharedDataKey);
 

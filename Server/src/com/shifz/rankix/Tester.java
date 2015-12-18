@@ -25,7 +25,7 @@ public class Tester {
     public static void main(String[] args) throws IOException {
 
         final String fileName = "4.4 # Sacrifice.2011 - Rankix";
-        System.out.println(FileAnalyzer.getClearedRandixName(fileName));
+        //System.out.println(FileAnalyzer.getClearedRandixName(fileName));
 
     }
 

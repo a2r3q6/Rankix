@@ -89,14 +89,18 @@ public final class Movies {
      * @param value
      * @return true on success, false on failure.
      */
-    private boolean update(String id, String column, String value) {
-        final String query = String.format("UPDATE movies SET %s = ? WHERE id = ?", column);
+    public boolean update(String id, String column, String value) {
+        return update(COLUMN_ID, id, column, value);
+    }
+
+    public boolean update(String whereColumn, String whereColumnValue, String whichColumn, String whichColumnValue) {
+        final String query = String.format("UPDATE movies SET %s = ? WHERE %s = ?", whichColumn, whereColumn);
         final java.sql.Connection con = Connection.getConnection();
         boolean isUpdated = false;
         try {
             final PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, value);
-            ps.setString(2, id);
+            ps.setString(1, whichColumnValue);
+            ps.setString(2, whereColumnValue);
             isUpdated = ps.executeUpdate() == 1;
             ps.close();
         } catch (SQLException e) {
@@ -114,6 +118,7 @@ public final class Movies {
     public boolean updateRating(final String movieId, final String newRating) {
         return update(movieId, COLUMN_RATING, newRating);
     }
+
 
     public boolean add(Movie movie) {
         final String query = "INSERT INTO movies (movie_name,file_name,imdb_id,gender,rating,plot,poster_url) VALUES (?,?,?,?,?,?,?);";
@@ -170,7 +175,7 @@ public final class Movies {
 
     public boolean update(Movie updatedMovie) {
 
-        System.out.println("Updating movie by adding more details " + updatedMovie);
+        //System.out.println("Updating movie by adding more details " + updatedMovie);
 
         final String query = "UPDATE movies SET movie_name = ? , gender= ? ,rating= ? , plot= ? ,poster_url= ? WHERE id = ?";
         final java.sql.Connection con = Connection.getConnection();

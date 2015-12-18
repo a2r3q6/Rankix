@@ -77,7 +77,7 @@ public class ShareServlet extends BaseServlet {
 
         for (final String node : nodes) {
             if (!node.matches(VALID_NODE_REGEX)) {
-                System.out.println("Invalid data @ "+node);
+                //System.out.println("Invalid data @ "+node);
                 return false;
             }
         }
