@@ -15,7 +15,7 @@ import java.io.PrintWriter;
 import java.util.Random;
 
 /**
- * Created by shifar on 17/12/15.
+ * Created by shifar on 17/12/15."
  */
 @WebServlet(urlPatterns = {"/shareServlet"})
 public class ShareServlet extends BaseServlet {
@@ -24,7 +24,8 @@ public class ShareServlet extends BaseServlet {
     private static final String SHARED_DATA_URL = "shared_data_url";
     private static final String SHARED_DATA_URL_FORMAT = Connection.debugMode
             ? "http://localhost:8080/index.htm?key=%s "
-            : "http://shifar-shifz.rhcloud.com/Rankix/index.html?key=%s";
+            : "http://shifar-shifz.rhcloud.com/Rankix/index.htm?key=%s";
+    private static final String VALID_NODE_REGEX = "^<p r=\"\\d+(?:\\.\\d)?\".+<\\/p>$";
     private static Random random;
 
     @Override
@@ -34,7 +35,7 @@ public class ShareServlet extends BaseServlet {
 
         final String shareData = request.getParameter(KEY_SHARE_DATA);
 
-        if (shareData == null || shareData.trim().isEmpty()) {
+        if (shareData == null || shareData.trim().isEmpty() || !isValidData(shareData)) {
 
             out.write(getJSONError("Invalid share data."));
 
@@ -65,6 +66,23 @@ public class ShareServlet extends BaseServlet {
 
         out.flush();
         out.close();
+    }
+
+    private static boolean isValidData(String shareData) {
+        final String[] nodes = shareData.split("\n");
+
+        if (nodes.length == 0) {
+            return false;
+        }
+
+        for (final String node : nodes) {
+            if (!node.matches(VALID_NODE_REGEX)) {
+                System.out.println("Invalid data @ "+node);
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private static String getShareSuccessMessage(String shareDataKey) {

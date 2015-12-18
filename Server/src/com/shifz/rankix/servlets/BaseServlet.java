@@ -15,13 +15,13 @@ public class BaseServlet extends HttpServlet {
     protected static final String KEY_NAME = "name";
 
     protected static final String KEY_ERROR = "error";
-    private static final String KEY_DATA = "data";
+    private static final String KEY_MESSAGE = "message";
 
     public static String getJSONError(final String reason){
         final JSONObject jError = new JSONObject();
         try {
             jError.put(KEY_ERROR,true);
-            jError.put(KEY_DATA,reason);
+            jError.put(KEY_MESSAGE,reason);
         } catch (JSONException e) {
             e.printStackTrace();
         }

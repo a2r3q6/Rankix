@@ -77,7 +77,8 @@ $(document).ready(function () {
             },
             error: function(xhr){
                 console.log(xhr);
-                consoleData("Error "+xhr.response);
+                consoleData("Error "+xhr.data);
+                consoleData("Error "+xhr.data);
             }
         });
     }
@@ -127,6 +128,7 @@ $(document).ready(function () {
 
                 if (!response.error) {
                     $("#bSort").fadeOut(1000);
+                    $("#bShare").fadeIn(1000);
                     $("#results").html(response.results);
                 } else {
                     alert(response.message);
@@ -225,8 +227,8 @@ $(document).ready(function () {
                         postProgress(0, "");
                         hideProgress();
                         freeApp();
-                        showError(data.data);
-                        consoleData(data.data);
+                        showError(data.message);
+                        consoleData(data.message);
                     } else {
 
                         $("#pbProgress")
@@ -283,10 +285,10 @@ $(document).ready(function () {
                                 addResult(fontSize, movieName, data.imdb_id, data.data);
                             } else {
 
-                                console.log('Data is ' + data.data);
+                                console.log('Data is ' + data.message);
 
                                 var myRegexp = /^Invalid movie name (.+)$/;
-                                var match = myRegexp.exec(data.data);
+                                var match = myRegexp.exec(data.message);
                                 movieName = match[1];
                                 $("div#results").prepend('<p r="0" class="text-danger"><strong>' + movieName + '</strong> has no rating</p>\n');
                             }

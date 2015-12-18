@@ -26,35 +26,48 @@ public class SharedData {
 
     public boolean add(String shareDataKey, String shareData) {
         final String query = "INSERT INTO shared_data (data_key,data) VALUES (?,?);";
+        final java.sql.Connection con = Connection.getConnection();
+        boolean isAdded = false;
         try {
-            final PreparedStatement ps = Connection.getConnection().prepareStatement(query);
+            final PreparedStatement ps = con.prepareStatement(query);
             ps.setString(1, shareDataKey);
             ps.setString(2, shareData);
-            final boolean isAdded = ps.executeUpdate() == 1;
+            isAdded = ps.executeUpdate() == 1;
             ps.close();
-            return isAdded;
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        return false;
+        return isAdded;
     }
 
     public String get(final String returnColumn, final String whereColumn, final String whereColumnValue) {
         final String query = String.format("SELECT %s FROM shared_data WHERE %s = ? LIMIT 1", returnColumn, whereColumn);
+        String data = null;
+        final java.sql.Connection con = Connection.getConnection();
         try {
-            final PreparedStatement ps = Connection.getConnection().prepareStatement(query);
+            final PreparedStatement ps = con.prepareStatement(query);
             ps.setString(1, whereColumnValue);
             final ResultSet rs = ps.executeQuery();
-            String data = null;
             if (rs.first()) {
                 data = rs.getString(returnColumn);
             }
             rs.close();
             ps.close();
-            return data;
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-        return null;
+        return data;
     }
 }

@@ -109,7 +109,7 @@ public class IMDBServlet extends BaseServlet {
 
                             final boolean isMoreDetailsAdded = movies.update(dbMovie);
                             if (!isMoreDetailsAdded) {
-                                throw new Error("Failed to add more details to the movie ");
+                                throw new Error("Failed to add more details to the movie");
                             }
                         }
 

@@ -26,7 +26,7 @@ data_key VARCHAR(10) NOT NULL,
 data TEXT NOT NULL,
 created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ,
 PRIMARY KEY(id),
-UNIQUE (urlId)
+UNIQUE (data_key)
 );
 
 /* Change the delimiter so we can use ";" within the CREATE TRIGGER */
