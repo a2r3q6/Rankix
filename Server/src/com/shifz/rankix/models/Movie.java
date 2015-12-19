@@ -84,7 +84,6 @@ public class Movie {
                 this.movieName != null &&
                 this.fileName != null &&
                 this.gender != null &&
-                this.posterUrl != null &&
                 //And finally the base
                 hasValidRating();
     }

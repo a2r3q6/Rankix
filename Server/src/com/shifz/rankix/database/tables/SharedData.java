@@ -14,7 +14,7 @@ public class SharedData {
 
     public static final String COLUMN_DATA = "data";
     public static final String COLUMN_DATA_KEY = "data_key";
-    private static SharedData ourInstance = new SharedData();
+    private static final SharedData ourInstance = new SharedData();
 
     public static SharedData getInstance() {
         return ourInstance;

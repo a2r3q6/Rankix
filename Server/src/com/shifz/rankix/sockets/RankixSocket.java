@@ -24,13 +24,6 @@ public class RankixSocket {
     private static final String DATA = "data";
     private static final String IMDB_ID = "imdb_id";
 
-    private Movies movies;
-
-    @OnOpen
-    public void onOpen() {
-        System.out.println("Connected to RankixSocket");
-        movies = Movies.getInstance();
-    }
 
     @OnMessage
     public void onMessage(Session session, String movieNameAndId) {
@@ -47,7 +40,8 @@ public class RankixSocket {
             final String id = jMovie.getString(ID);
             name = jMovie.getString(NAME);
 
-            Movie dbMovie = movies.getBasicMovie(Movies.COLUMN_FILE_NAME, name);
+            final Movies movies = Movies.getInstance();
+            final Movie dbMovie = movies.getBasicMovie(Movies.COLUMN_FILE_NAME, name);
 
             if (dbMovie != null && dbMovie.hasValidRating()) {
 
