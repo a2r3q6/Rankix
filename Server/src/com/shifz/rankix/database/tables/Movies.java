@@ -12,7 +12,7 @@ import java.sql.SQLException;
  */
 public final class Movies {
 
-    private static final Movies instance = new Movies();
+    private static Movies instance;
     public static final String COLUMN_IMDB_ID = "imdb_id";
     private static final String COLUMN_ID = "id";
     public static final String COLUMN_MOVIE_NAME = "movie_name";
@@ -29,6 +29,9 @@ public final class Movies {
     }
 
     public static Movies getInstance() {
+        if (instance == null) {
+            instance = new Movies();
+        }
         return instance;
     }
 
