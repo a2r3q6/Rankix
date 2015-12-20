@@ -1,19 +1,14 @@
 ![Banner](http://s6.postimg.org/3xisyu8fl/banner.png)
 
-# This project is under development ...
 
+An IMDB Bot that can fetch movie details and ratings of the available movies on your Computer.
 
-but we've a stable version running. Some of the features are listed below. Read on...
+### Features
 
-### New Features
-
-1. Sorting enabled
-2. Server Cacheing
-3. Local Cacheing
-4. Detailed Movie View 
-5. and many more improvements.
-
-Rankix is an IMDB Helper tool which can fetch the IMDB Ratings with in **MILLISECONDS**.
+1. Instant movie ratings.
+2. Can be sorted according to the rating.
+3. The result can be shared with anybody.
+4. Detailed Movie view.
 
 The tools is available in both WEB and Console versions.
 
@@ -84,10 +79,6 @@ BEFORE AND AFTER
 
 ![After](http://s6.postimg.org/5f49aed69/screenshot_2.png)
 
-
-**TIME TAKEN: 2.456 seconds**
-
-Rankixedname format = **(IMDBRating) # (originalFileName) - Rankix (fileExtension)**
 
 Demo
 ====
