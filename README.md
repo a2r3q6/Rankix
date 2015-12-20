@@ -10,7 +10,7 @@ An IMDB Bot that can fetch movie details and ratings of the available movies on 
 3. The result can be shared with anybody.
 4. Detailed Movie view.
 
-The tools is available in both WEB and Console versions.
+Rankix is available in both Console and Web version. Console version can only fetch ratings and less interactive where as Web version is much more advanced and interactive than the console.
 
 # WEB Version 
 **released on 11-6-2015**
