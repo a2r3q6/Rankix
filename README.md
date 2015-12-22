@@ -3,6 +3,8 @@
 
 An IMDB Bot that can fetch movie details and ratings of the available movies on your Computer.
 
+**Currently there's a problem with the database, but am trying to find a fix.
+
 ### Features
 
 1. Instant movie ratings.
