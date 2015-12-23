@@ -1,9 +1,6 @@
 ![Banner](http://s6.postimg.org/3xisyu8fl/banner.png)
 
-
 An IMDB Bot that can fetch movie details and ratings of the available movies on your Computer.
-
-**Currently there's a problem with the database, but am trying to find a fix.
 
 ### Features
 
