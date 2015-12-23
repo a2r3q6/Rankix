@@ -9,6 +9,7 @@ public class Movie {
     private final String id, fileName;
     private String imdbId, rating, movieName, gender, plot, posterUrl;
     private int ratingUpdatedBefore;
+    private static final int MAX_RATING_VALIDITY_IN_DAYS = 5;
 
     public Movie(String id, String movieName, String fileName, String imdbId, String rating, String gender, String plot, String posterUrl, final int ratingUpdatedBefore) {
         this.id = id;
@@ -127,6 +128,10 @@ public class Movie {
     }
 
     public boolean hasValidRating() {
-        return (this.ratingUpdatedBefore == 0 || this.ratingUpdatedBefore == 1);
+        return this.ratingUpdatedBefore >= 0 && this.ratingUpdatedBefore <= MAX_RATING_VALIDITY_IN_DAYS;
+    }
+
+    public int getRatingUpdatedBefore() {
+        return this.ratingUpdatedBefore;
     }
 }

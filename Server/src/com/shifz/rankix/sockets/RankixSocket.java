@@ -24,6 +24,11 @@ public class RankixSocket {
     private static final String DATA = "data";
     private static final String IMDB_ID = "imdb_id";
 
+    @OnOpen
+    public void onOpen() {
+        System.out.println("RankixSocket opened :)");
+    }
+
 
     @OnMessage
     public void onMessage(Session session, String movieNameAndId) {
@@ -33,6 +38,7 @@ public class RankixSocket {
 
         //Increasing movie name visibility, so that it can available in catch statements.
         String name = null;
+
 
         try {
 
@@ -56,7 +62,13 @@ public class RankixSocket {
 
             } else {
 
-                System.out.println("Movie doesn't exist in : " + dbMovie);
+                if (dbMovie == null) {
+                    System.out.println("Movie doesn't exist in ");
+                } else {
+                    System.out.println("Movie is "+dbMovie);
+                    System.out.println("Rating expired and count is " + dbMovie.getRatingUpdatedBefore());
+                }
+
 
                 final MovieBuff movieBuff = new MovieBuff(id, name);
                 final Movie newMovie = movieBuff.getMovie();

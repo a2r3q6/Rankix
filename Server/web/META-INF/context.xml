@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
 
-    <Resource name="jdbc/rankix"
+    <Resource name="jdbc/shifar"
               auth="Container"
               type="javax.sql.DataSource"
-              maxActive="20"
-              maxIdle="5"
+              maxActive="100"
+              removeAbandoned="true"
+              removeAbandonedTimeout="10"
+              maxIdle="30"
               maxWait="10000"
               username="root" password="admin123" driverClassName="com.mysql.jdbc.Driver"
-              url="jdbc:mysql://192.168.0.100:3306/rankix"/>
+              url="jdbc:mysql://192.168.0.105:3306/shifar"/>
 
 </Context>

@@ -73,7 +73,14 @@ public final class Movies {
 
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+
         return movie;
     }
 
@@ -90,7 +97,7 @@ public final class Movies {
     }
 
     public boolean update(String whereColumn, String whereColumnValue, String whichColumn, String whichColumnValue) {
-        final String query = String.format("UPDATE movies SET %s = ? WHERE %s = ?", whichColumn, whereColumn);
+        final String query = String.format("UPDATE movies SET %s = ? , updated_at = now() WHERE %s = ?", whichColumn, whereColumn);
         final java.sql.Connection con = Connection.getConnection();
         boolean isUpdated = false;
         try {
@@ -101,6 +108,12 @@ public final class Movies {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return isUpdated;
     }
@@ -132,6 +145,12 @@ public final class Movies {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return isAdded;
     }
@@ -147,6 +166,12 @@ public final class Movies {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
         return isAdded;
     }
@@ -173,6 +198,12 @@ public final class Movies {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         return isUpdated;
@@ -200,6 +231,12 @@ public final class Movies {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
 
         return movie;
@@ -223,7 +260,14 @@ public final class Movies {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
+        }finally{
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+
         return data;
     }
 }
