@@ -29,7 +29,6 @@ public final class IMDBDotComHelper {
 
     private String getMovieName() {
         final String[] exp1 = this.imdbHtml.split(MOVIE_NAME_EXP1_REGEX);
-        debug(exp1);
         return exp1[1].split(MOVIE_NAME_EXP2_REGEX)[0];
     }
 
@@ -66,7 +65,6 @@ public final class IMDBDotComHelper {
         final String posterRegEx = String.format("<img alt=\"%s Poster", movieName);
         System.out.println(posterRegEx);
         final String[] exp1 = this.imdbHtml.split(posterRegEx);
-        System.out.println(this.imdbHtml);
         if (exp1.length >= 2) {
             final String exp2 = exp1[1].split(MOVIE_POSTER_EXP1_REGEX)[0];
             String imageUrl = exp2.split(MOVIE_POSTER_EXP2_REGEX)[1];
