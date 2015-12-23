@@ -73,14 +73,7 @@ public final class Movies {
 
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
-
         return movie;
     }
 
@@ -108,12 +101,6 @@ public final class Movies {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
         return isUpdated;
     }
@@ -145,12 +132,6 @@ public final class Movies {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
         return isAdded;
     }
@@ -166,12 +147,6 @@ public final class Movies {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
         return isAdded;
     }
@@ -198,12 +173,6 @@ public final class Movies {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
 
         return isUpdated;
@@ -231,12 +200,6 @@ public final class Movies {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
 
         return movie;

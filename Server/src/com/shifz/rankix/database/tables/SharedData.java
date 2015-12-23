@@ -36,12 +36,6 @@ public class SharedData {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
         return isAdded;
     }
@@ -61,12 +55,6 @@ public class SharedData {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
         return data;
     }
