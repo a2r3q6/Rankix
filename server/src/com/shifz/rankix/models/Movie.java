@@ -65,7 +65,7 @@ public class Movie {
         this.rating = rating;
     }
 
-    public String getGender() {
+    public String getGenre() {
         return this.gender;
     }
 
@@ -89,19 +89,6 @@ public class Movie {
                 hasValidRating();
     }
 
-    @Override
-    public String toString() {
-        return "Movie{" +
-                "id='" + id + '\'' +
-                ", movieName='" + movieName + '\'' +
-                ", gender='" + gender + '\'' +
-                ", plot='" + plot + '\'' +
-                ", imdbId='" + imdbId + '\'' +
-                ", rating='" + rating + '\'' +
-                ", posterUrl='" + posterUrl + '\'' +
-                ", ratingUpdatedBefore=" + ratingUpdatedBefore +
-                '}';
-    }
 
     public boolean hasMoreDetails() {
         return this.plot != null;
@@ -133,5 +120,20 @@ public class Movie {
 
     public int getRatingUpdatedBefore() {
         return this.ratingUpdatedBefore;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id='" + id + '\'' +
+                ", fileName='" + fileName + '\'' +
+                ", imdbId='" + imdbId + '\'' +
+                ", rating='" + rating + '\'' +
+                ", movieName='" + movieName + '\'' +
+                ", gender='" + gender + '\'' +
+                ", plot='" + plot + '\'' +
+                ", posterUrl='" + posterUrl + '\'' +
+                ", ratingUpdatedBefore=" + ratingUpdatedBefore +
+                '}';
     }
 }

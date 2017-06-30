@@ -19,7 +19,7 @@ public final class Movies {
     public static final String COLUMN_FILE_NAME = "file_name";
     public static final String COLUMN_RATING = "rating";
     private static final String COLUMN_GENDER = "gender";
-    private static final String COLUMN_PLOT = "plot";
+    public static final String COLUMN_PLOT = "plot";
     public static final String COLUMN_POSTER_URL = "poster_url";
     private static final String COLUMN_AS_RATING_UPDATED_BEFORE = "rating_updated_before";
 
@@ -51,18 +51,7 @@ public final class Movies {
             ps.setString(1, value);
             final ResultSet rs = ps.executeQuery();
             if (rs.first()) {
-
-                final String id = rs.getString(COLUMN_ID);
-                final String fileName = rs.getString(COLUMN_FILE_NAME);
-                final String movieName = rs.getString(COLUMN_MOVIE_NAME);
-                final String imdbId = rs.getString(COLUMN_IMDB_ID);
-                final String rating = rs.getString(COLUMN_RATING);
-                final String gender = rs.getString(COLUMN_GENDER);
-                final String plot = rs.getString(COLUMN_PLOT);
-                final String posterUrl = rs.getString(COLUMN_POSTER_URL);
-                final int ratingUpdatedBefore = rs.getInt(COLUMN_AS_RATING_UPDATED_BEFORE);
-
-                movie = new Movie(id, movieName, fileName, imdbId, rating, gender, plot, posterUrl, ratingUpdatedBefore);
+                movie = getMovie(rs);
             }
 
 
@@ -80,6 +69,50 @@ public final class Movies {
         }
 
         return movie;
+    }
+
+    public Movie getMovieLike(String name) {
+
+        final String query = "SELECT id,file_name,movie_name,imdb_id,rating,gender,plot,poster_url, IFNULL(DATEDIFF(now(),updated_at),-1) AS rating_updated_before FROM movies WHERE movie_name LIKE ? ORDER BY id DESC LIMIT 1 ";
+        final java.sql.Connection con = Connection.getConnection();
+        Movie movie = null;
+        try {
+            final PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, "%"+name+"%");
+                final ResultSet rs = ps.executeQuery();
+
+            if (rs.first()) {
+                movie = getMovie(rs);
+            }
+
+            rs.close();
+            ps.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return movie;
+    }
+
+    private Movie getMovie(ResultSet rs) throws SQLException {
+        final String id = rs.getString(COLUMN_ID);
+        final String fileName = rs.getString(COLUMN_FILE_NAME);
+        final String movieName = rs.getString(COLUMN_MOVIE_NAME);
+        final String imdbId = rs.getString(COLUMN_IMDB_ID);
+        final String rating = rs.getString(COLUMN_RATING);
+        final String gender = rs.getString(COLUMN_GENDER);
+        final String plot = rs.getString(COLUMN_PLOT);
+        final String posterUrl = rs.getString(COLUMN_POSTER_URL);
+        final int ratingUpdatedBefore = rs.getInt(COLUMN_AS_RATING_UPDATED_BEFORE);
+
+        return new Movie(id, movieName, fileName, imdbId, rating, gender, plot, posterUrl, ratingUpdatedBefore);
     }
 
     /**
@@ -133,7 +166,7 @@ public final class Movies {
             ps.setString(1, movie.getMovieName());
             ps.setString(2, movie.getFileName());
             ps.setString(3, movie.getImdbId());
-            ps.setString(4, movie.getGender());
+            ps.setString(4, movie.getGenre());
             ps.setString(5, movie.getRating());
             ps.setString(6, movie.getPlot());
             ps.setString(7, movie.getPosterUrl());
@@ -186,7 +219,7 @@ public final class Movies {
 
             //Setting params
             ps.setString(1, updatedMovie.getMovieName());
-            ps.setString(2, updatedMovie.getGender());
+            ps.setString(2, updatedMovie.getGenre());
             ps.setString(3, updatedMovie.getRating());
             ps.setString(4, updatedMovie.getPlot());
             ps.setString(5, updatedMovie.getPosterUrl());
@@ -240,6 +273,7 @@ public final class Movies {
         return movie;
     }
 
+
     public String get(String whichColumn, String column, String columnValue) {
 
         final String query = String.format("SELECT %s FROM movies WHERE %s = ? ORDER BY id DESC", whichColumn, column);
@@ -258,7 +292,7 @@ public final class Movies {
             ps.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally{
+        } finally {
             try {
                 con.close();
             } catch (SQLException e) {

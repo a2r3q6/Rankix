@@ -39,7 +39,6 @@ public class RankixSocket {
         //Increasing movie name visibility, so that it can available in catch statements.
         String name = null;
 
-
         try {
 
             final JSONObject jMovie = new JSONObject(movieNameAndId);

@@ -23,7 +23,7 @@ public class IMDBServlet extends BaseServlet {
 
     protected static final String KEY_IMDB_ID = "imdbId";
     protected static final String REGEX_IMDBID = "tt\\d{7}";
-    private static final String IMDB_URL_FORMAT = "http://imdb.com/title/%s/";
+    static final String IMDB_URL_FORMAT = "http://imdb.com/title/%s/";
     private static final String KEY_GENDER = "gender";
     private static final String KEY_RATING = "rating";
     private static final String KEY_PLOT = "plot";
@@ -96,7 +96,7 @@ public class IMDBServlet extends BaseServlet {
                             final Movie newMovie = imdbHelper.getMovie();
 
                             dbMovie.setMovieName(newMovie.getMovieName());
-                            dbMovie.setGender(newMovie.getGender());
+                            dbMovie.setGender(newMovie.getGenre());
                             dbMovie.setPlot(newMovie.getPlot());
                             dbMovie.setPosterUrl(newMovie.getPosterUrl());
 
@@ -144,7 +144,7 @@ public class IMDBServlet extends BaseServlet {
         try {
             jMovie.put(KEY_ERROR, false);
             jMovie.put(KEY_NAME, movie.getMovieName());
-            jMovie.put(KEY_GENDER, movie.getGender());
+            jMovie.put(KEY_GENDER, movie.getGenre());
             jMovie.put(KEY_RATING, movie.getRating());
             jMovie.put(KEY_PLOT, movie.getPlot());
             jMovie.put(KEY_POSTER_URL, String.format(Connection.debugMode ? DEBUG_POSTER_URL_FORMAT : POSTER_URL_FORMAT, movie.getImdbId()));
