@@ -73,13 +73,14 @@ public final class Movies {
 
     public Movie getMovieLike(String name) {
 
-        final String query = "SELECT id,file_name,movie_name,imdb_id,rating,gender,plot,poster_url, IFNULL(DATEDIFF(now(),updated_at),-1) AS rating_updated_before FROM movies WHERE movie_name LIKE ? ORDER BY id DESC LIMIT 1 ";
+        final String query = "SELECT id,file_name,movie_name,imdb_id,rating,gender,plot,poster_url, IFNULL(DATEDIFF(now(),updated_at),-1) AS rating_updated_before FROM movies WHERE movie_name LIKE ? ORDER BY id DESC LIMIT 1";
         final java.sql.Connection con = Connection.getConnection();
         Movie movie = null;
         try {
             final PreparedStatement ps = con.prepareStatement(query);
-            ps.setString(1, "%"+name+"%");
-                final ResultSet rs = ps.executeQuery();
+            ps.setString(1, "%" + name + "%");
+
+            final ResultSet rs = ps.executeQuery();
 
             if (rs.first()) {
                 movie = getMovie(rs);

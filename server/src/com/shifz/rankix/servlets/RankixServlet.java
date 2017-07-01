@@ -52,8 +52,9 @@ public class RankixServlet extends AdvancedBaseServlet {
         final Movies movies = Movies.getInstance();
         final Movie dbMovie = movies.getMovieLike(name);
 
+        System.out.println("DB movie is " + dbMovie);
 
-        if (dbMovie != null && dbMovie.hasValidRating()) {
+        if (dbMovie != null && dbMovie.hasMoreDetails() && dbMovie.hasValidRating()) {
 
             if (dbMovie.getRating() != null) {
                 setResponse(dbMovie);
